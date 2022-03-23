@@ -1,0 +1,69 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+coverage_html/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.pot
+
+# Django stuff:
+*.log
+movyu/settings/development-non-docker.py
+movyu/settings/development.py
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# celery beat schedule file
+celerybeat-schedule
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Pycharm
+.idea/
+
+# VS Code
+.vscode/
+
+# etc
+/etc/**/*.key
+/etc/**/*.key.pub
+
+# Docker
+docker-compose.override.yml
+
+# celery
+celerybeat-schedule
+
+# mac related
+*.DS_Store
+
+sphinx/_build
