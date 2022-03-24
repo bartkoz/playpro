@@ -79,7 +79,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'playpro.wsgi.application'
 # STATIC_URL = "/static/"
-# STATIC_ROOT = "/opt/app/static"
+STATIC_ROOT = BASE_DIR / "staticfiles"
 APPEND_SLASH = True
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
