@@ -6,6 +6,17 @@ from rest_framework.views import APIView
 from users.models import User, School
 from users.serializers import UserCreateSerializer, SchoolSerializer
 
+from rest_framework_simplejwt.tokens import RefreshToken
+
+
+def get_tokens_for_user(user):
+    refresh = RefreshToken.for_user(user)
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
+
 
 class EmailUniquenessAPIView(APIView):
 
@@ -31,7 +42,7 @@ class UserCreateAPIView(APIView):
                 user.set_password(data.get('password'))
                 # user.is_active = False
                 user.save()
-                return Response({'success': True}, status=status.HTTP_200_OK)
+                return Response({'token': get_tokens_for_user(user)}, status=status.HTTP_200_OK)
         return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
