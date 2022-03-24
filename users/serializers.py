@@ -1,6 +1,8 @@
+from django.contrib.auth.password_validation import validate_password, get_default_password_validators
+from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from users.models import User
+from users.models import User, School
 from django.utils.translation import gettext_lazy as _
 
 
@@ -22,11 +24,27 @@ class UserCreateSerializer(serializers.ModelSerializer):
                   )
 
     def validate(self, attrs):
+        errors = []
         if attrs.get('password') != attrs.get('password2'):
-            raise serializers.ValidationError(_('Passwords are not equal!'))
+            errors.append({'password': _('Passwords are not equal!')})
         if User.objects.filter(email=attrs.get('email')).exists():
-            raise serializers.ValidationError(_('Email already in use!'))
+            errors.append({'email': _('Email already in use!')})
         if attrs.get('user_type') == User.UserType.STUDENT:
             if not attrs.get('school_year'):
-                raise serializers.ValidationError(_('Please specify your school year.'))
+                errors.append({'school_year': _('Please specify your school year.')})
+        password_validators = get_default_password_validators()
+        for validator in password_validators:
+            try:
+                validator.validate(attrs.get('password'))
+            except ValidationError as error:
+                errors.append({'password': error})
+        if errors:
+            raise serializers.ValidationError(errors)
         return attrs
+
+
+class SchoolSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = School
+        fields = ('name', 'id')

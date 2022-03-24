@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-t6th$na6-%&qq7syg774eqb564y&1g6n($xc4)=(q5^))kq_ve
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 AUTH_USER_MODEL = 'users.User'
 # Application definition
@@ -84,8 +84,13 @@ WSGI_APPLICATION = 'playpro.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'de7fogkt93j376',
+        'USER': 'ytmsalmrcmlwto',
+        'PASSWORD': 'd758bf0bfd4e55e9b100fa31d3482aa1c4630f59e13a60240bf348d3359ec9cc',
+        'HOST': 'ec2-63-32-248-14.eu-west-1.compute.amazonaws.com',
+        'PORT': '5432',
+        'CONN_MAX_AGE': 2000,
     }
 }
 
@@ -105,6 +110,17 @@ AUTH_PASSWORD_VALIDATORS = [
     },
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+    {
+        'NAME': 'users.validators.PasswordCharacterValidator',
+        'OPTIONS': {
+            'min_length_digit': 1,
+            'min_length_alpha': 1,
+            'min_length_special': 1,
+            'min_length_lower': 1,
+            'min_length_upper': 1,
+            'special_characters': "~!@#$%^&*()_+{}\":;'[]"
+        }
     },
 ]
 

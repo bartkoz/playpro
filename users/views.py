@@ -1,9 +1,10 @@
 from rest_framework import status
+from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.models import User
-from users.serializers import UserCreateSerializer
+from users.models import User, School
+from users.serializers import UserCreateSerializer, SchoolSerializer
 
 
 class EmailUniquenessAPIView(APIView):
@@ -32,3 +33,9 @@ class UserCreateAPIView(APIView):
                 user.save()
                 return Response({'success': True}, status=status.HTTP_200_OK)
         return Response({'errors': serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class SchoolListAPIView(ListAPIView):
+
+    serializer_class = SchoolSerializer
+    queryset = School.objects.all()
