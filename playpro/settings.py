@@ -97,7 +97,6 @@ DATABASES = {
         'CONN_MAX_AGE': 2000,
     }
 }
-DATABASES = {}
 db = dj_database_url.config(conn_max_age=2000)
 DATABASES['default'].update(db)
 
