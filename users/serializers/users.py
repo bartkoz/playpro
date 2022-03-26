@@ -9,13 +9,12 @@ from django.utils.translation import gettext_lazy as _
 
 
 class UserCreateSerializer(serializers.ModelSerializer):
-    password2 = serializers.CharField(min_length=8, max_length=4096)
+    tos_accepted = serializers.BooleanField()
 
     class Meta:
         model = User
         fields = (
             "password",
-            "password2",
             "email",
             "first_name",
             "last_name",
@@ -24,12 +23,13 @@ class UserCreateSerializer(serializers.ModelSerializer):
             "school",
             "school_year",
             "school_email",
+            "tos_accepted"
         )
 
     def validate(self, attrs):
         errors = []
-        if attrs.get("password") != attrs.get("password2"):
-            errors.append({"password": _("Passwords are not equal!")})
+        if not attrs.get("tos_accepted"):
+            errors.append({"tos_accepted": _("You need to accept terms of service.")})
         if User.objects.filter(email=attrs.get("email")).exists():
             errors.append({"email": _("Email already in use!")})
         if attrs.get("user_type") == User.UserType.STUDENT:

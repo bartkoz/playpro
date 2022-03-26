@@ -10,16 +10,15 @@ from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.utils.translation import gettext as _
 from django.conf import settings
 from rest_framework import status
-from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.models import User, UserAvatar
+from users.models import User
 from users.serializers import (
     UserCreateSerializer,
     EmailResetSerializer,
     EmailPasswordChangedSerializer,
-    AvatarSerializer,
     ProfileSerializer,
     ProfileUpdateSerializer,
     ProfilePasswordUpdateSerializer,
@@ -158,12 +157,6 @@ class UserPasswordResetAPIView(APIView):
             user.set_password(serializer.validated_data["password"])
             return Response(status=status.HTTP_200_OK)
         return Response(status=status.HTTP_403_FORBIDDEN)
-
-
-class AvailableAvatarsAPIView(ListAPIView):
-
-    serializer_class = AvatarSerializer
-    queryset = UserAvatar.objects.all()
 
 
 class ProfileAPIView(RetrieveUpdateAPIView):
