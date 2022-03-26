@@ -23,7 +23,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             "school",
             "school_year",
             "school_email",
-            "tos_accepted"
+            "tos_accepted",
         )
 
     def validate(self, attrs):
@@ -109,3 +109,12 @@ class ProfilePasswordUpdateSerializer(serializers.Serializer):
         user.set_password(value)
         user.save()
         return value
+
+
+class UserTeammateserializer(serializers.ModelSerializer):
+
+    avatar = serializers.URLField(source="avatar.image.url")
+
+    class Meta:
+        model = User
+        fields = ("pk", "avatar", "nickname", "first_name", "last_name")

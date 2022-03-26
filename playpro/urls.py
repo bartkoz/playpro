@@ -25,4 +25,5 @@ urlpatterns = [
         name="schema-swagger-ui",
     ),
     path("users/", include("users.urls")),
+    path("tournaments/", include("tournaments.urls")),
 ]
