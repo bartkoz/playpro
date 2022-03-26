@@ -6,7 +6,7 @@ from users.views import (
     UserCreateAPIView,
     SchoolListAPIView,
     UserPasswordResetLinkGenerateAPIView,
-    UserPasswordResetAPIView,
+    UserPasswordResetAPIView, AvailableAvatarsAPIView, ProfileAPIView,
 )
 
 urlpatterns = [
@@ -17,4 +17,6 @@ urlpatterns = [
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("password-reset/", UserPasswordResetLinkGenerateAPIView.as_view()),
     path("password-reset/<uidb64>/<token>/", UserPasswordResetAPIView.as_view()),
+    path("available-avatars/", AvailableAvatarsAPIView.as_view()),
+    path("profile/", ProfileAPIView.as_view()),
 ]

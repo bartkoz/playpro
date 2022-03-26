@@ -5,7 +5,7 @@ from django.contrib.auth.password_validation import (
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from users.models import User, School
+from users.models import User, School, UserAvatar
 from django.utils.translation import gettext_lazy as _
 
 
@@ -61,3 +61,25 @@ class EmailResetSerializer(serializers.Serializer):
 class EmailPasswordChangedSerializer(serializers.Serializer):
 
     password = serializers.CharField(required=True)
+
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ('nickname', 'first_name', 'last_name', 'avatar')
+        model = User
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+
+    avatar = serializers.URLField(source='avatar.image.url')
+    school_name = serializers.CharField(source='school.name')
+
+    class Meta:
+        fields = ('avatar', 'email', 'first_name', 'last_name', 'dob', 'school_email', 'school_name', 'school_year')
+        model = User
+
+class AvatarSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = ('image', )
+        model = UserAvatar

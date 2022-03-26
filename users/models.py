@@ -58,8 +58,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         STUDENT = 0, _("Student")
         STAFF = 1, _("Staff")
 
-    first_name = models.CharField(_("first name"), max_length=30)
-    last_name = models.CharField(_("last name"), max_length=150)
+    first_name = models.CharField(_("first name"), max_length=255)
+    last_name = models.CharField(_("last name"), max_length=255)
     email = models.EmailField(_("email address"), max_length=255, unique=True)
     is_staff = models.BooleanField(
         _("staff status"),
@@ -80,8 +80,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     school_year = models.IntegerField(blank=True, null=True)
     school_email = models.EmailField(unique=True)
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
-    activation_mail_sent = models.DateTimeField(auto_now_add=True)
     avatar = models.ForeignKey(UserAvatar, on_delete=models.SET_NULL, null=True)
+    nickname = models.CharField(max_length=510)
 
     objects = UserManager()
 
@@ -99,6 +99,12 @@ class User(AbstractBaseUser, PermissionsMixin):
             + timedelta(minutes=getattr(settings, "EMAIL_RESEND_DELAY"))
             <= timezone.now()
         )
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.nickname = f'{self.first_name}-{self.last_name}'
+            self.avatar = UserAvatar.objects.first()
+        super().save(*args, **kwargs)
 
 
 class School(models.Model):
