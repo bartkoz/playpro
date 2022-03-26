@@ -6,7 +6,9 @@ from users.views import (
     UserCreateAPIView,
     SchoolListAPIView,
     UserPasswordResetLinkGenerateAPIView,
-    UserPasswordResetAPIView, AvailableAvatarsAPIView, ProfileAPIView,
+    UserPasswordResetAPIView,
+    AvailableAvatarsAPIView,
+    ProfileAPIView,
 )
 
 urlpatterns = [

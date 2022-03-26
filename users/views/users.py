@@ -14,12 +14,15 @@ from rest_framework.generics import ListAPIView, RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from users.models import User, School, UserAvatar
+from users.models import User, UserAvatar
 from users.serializers import (
     UserCreateSerializer,
-    SchoolSerializer,
     EmailResetSerializer,
-    EmailPasswordChangedSerializer, AvatarSerializer, ProfileSerializer, ProfileUpdateSerializer,
+    EmailPasswordChangedSerializer,
+    AvatarSerializer,
+    ProfileSerializer,
+    ProfileUpdateSerializer,
+    ProfilePasswordUpdateSerializer,
 )
 
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -164,20 +167,17 @@ class AvailableAvatarsAPIView(ListAPIView):
 
 
 class ProfileAPIView(RetrieveUpdateAPIView):
-    permission_classes = ()
-    serializer_class = ProfileSerializer
-
     def get_object(self):
-        return User.objects.first()
-        # return self.request.user
+        return self.request.user
 
     def get_serializer_class(self):
-        if self.request.method == 'GET':
+        if self.request.method == "GET":
             return ProfileSerializer
+        elif any(
+            [
+                x in self.request.data.keys()
+                for x in ["current_password", "new_password"]
+            ]
+        ):
+            return ProfilePasswordUpdateSerializer
         return ProfileUpdateSerializer
-
-
-class SchoolListAPIView(ListAPIView):
-    permission_classes = ()
-    serializer_class = SchoolSerializer
-    queryset = School.objects.all()

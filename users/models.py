@@ -82,6 +82,10 @@ class User(AbstractBaseUser, PermissionsMixin):
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
     avatar = models.ForeignKey(UserAvatar, on_delete=models.SET_NULL, null=True)
     nickname = models.CharField(max_length=510)
+    epic_games_id = models.CharField(max_length=255, blank=True, default="")
+    ea_games_id = models.CharField(max_length=255, blank=True, default="")
+    ps_network_id = models.CharField(max_length=255, blank=True, default="")
+    riot_id = models.CharField(max_length=255, blank=True, default="")
 
     objects = UserManager()
 
@@ -102,7 +106,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def save(self, *args, **kwargs):
         if not self.pk:
-            self.nickname = f'{self.first_name}-{self.last_name}'
+            self.nickname = f"{self.first_name}-{self.last_name}"
             self.avatar = UserAvatar.objects.first()
         super().save(*args, **kwargs)
 
