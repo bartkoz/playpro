@@ -10,52 +10,114 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('users', '0001_initial'),
+        ("users", "0001_initial"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Tournament',
+            name="Tournament",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('registration_open_date', models.DateTimeField()),
-                ('registration_close_date', models.DateTimeField()),
-                ('registration_check_in_date', models.DateTimeField()),
-                ('name', models.CharField(max_length=255)),
-                ('logo', models.ImageField(upload_to='')),
-                ('team_size', models.PositiveIntegerField()),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("registration_open_date", models.DateTimeField()),
+                ("registration_close_date", models.DateTimeField()),
+                ("registration_check_in_date", models.DateTimeField()),
+                ("name", models.CharField(max_length=255)),
+                ("logo", models.ImageField(upload_to="")),
+                ("team_size", models.PositiveIntegerField()),
             ],
         ),
         migrations.CreateModel(
-            name='TournamentPlatform',
+            name="TournamentPlatform",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
             ],
         ),
         migrations.CreateModel(
-            name='TournamentTeam',
+            name="TournamentTeam",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=255)),
-                ('captain', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
-                ('school', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='users.school')),
-                ('tournament', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='tournaments.tournament')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "captain",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "school",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="users.school"
+                    ),
+                ),
+                (
+                    "tournament",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="tournaments.tournament",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='TournamentTeamMember',
+            name="TournamentTeamMember",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('invitation_accepted', models.BooleanField(null=True)),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='team_members', to='tournaments.tournamentteam')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("invitation_accepted", models.BooleanField(null=True)),
+                (
+                    "team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="team_members",
+                        to="tournaments.tournamentteam",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
         ),
         migrations.AddField(
-            model_name='tournament',
-            name='platforms',
-            field=models.ManyToManyField(to='tournaments.tournamentplatform'),
+            model_name="tournament",
+            name="platforms",
+            field=models.ManyToManyField(to="tournaments.tournamentplatform"),
         ),
     ]

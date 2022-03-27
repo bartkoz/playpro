@@ -3,8 +3,6 @@ from rest_framework import serializers
 from tournaments.models import Tournament, TournamentTeam, TournamentTeamMember
 from django.utils.translation import gettext_lazy as _
 
-from users.models import User
-
 
 class TournamentListSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,14 +38,23 @@ class TeamCreateSerializer(serializers.Serializer):
 
 class TeamUpdateSerializer(serializers.ModelSerializer):
     class Meta:
+        model = TournamentTeam
+        fields = ("name",)
+
+
+class TeamMemberUpdateSerializer(serializers.ModelSerializer):
+
+    action = serializers.ChoiceField(choices=(("add", "add"), ("delete", "delete")))
+
+    class Meta:
 
         model = TournamentTeamMember
-        fields = ("user",)
+        fields = ("user", "action")
 
     def validate_members(self, value):
         obj = self.context["obj"]
         value.remove(obj.captain)
-        # TODO
+        # TODO max team size
         # if obj.tournament.team_size < len(obj.tournament.members.count() + 1):
         #     raise serializers.ValidationError(
         #         _(
@@ -61,16 +68,28 @@ class TeamUpdateSerializer(serializers.ModelSerializer):
         return value
 
 
-class TeamSerializer(serializers.ModelSerializer):
+class TeamMemberSerializer(serializers.ModelSerializer):
 
-    full_name = serializers.CharField(source="user.full_name")
-    email = serializers.CharField(source="user.school_email")
+    full_name = serializers.CharField(source="user.full_name", read_only=True)
+    email = serializers.CharField(source="user.school_email", read_only=True)
     is_captain = serializers.SerializerMethodField()
-    avatar = serializers.URLField(source="user.avatar.image.url")
+    avatar = serializers.URLField(source="user.avatar.image.url", read_only=True)
+    invitation_accepted = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentTeamMember
-        fields = ("pk", "full_name", "email", "is_captain", "avatar")
+        fields = (
+            "pk",
+            "full_name",
+            "email",
+            "is_captain",
+            "avatar",
+            "invitation_accepted",
+        )
 
     def get_is_captain(self, obj):
-        return obj.team.captain == self.context["request"].user
+        return obj.team.captain == obj.user
+
+    def get_invitation_accepted(self, obj):
+        mapping = {None: "pending", False: "rejected", True: "accepted"}
+        return mapping[obj.invitation_accepted]

@@ -10,7 +10,8 @@ from tournaments.serializers import (
     TournamentDetailSerializer,
     TeamCreateSerializer,
     TeamUpdateSerializer,
-    TeamSerializer,
+    TeamMemberUpdateSerializer,
+    TeamMemberSerializer,
 )
 from users.models import User
 from users.serializers import UserTeammatesSrializer
@@ -27,14 +28,17 @@ class TournamentBaseViewSet(ReadOnlyModelViewSet):
 
 class TeamViewSet(
     mixins.CreateModelMixin,
+    mixins.DestroyModelMixin,
+    mixins.UpdateModelMixin,
     GenericViewSet,
 ):
     def get_serializer_class(self):
         if self.action == "create":
             return TeamCreateSerializer
-        elif self.request.method in ["POST", "DELETE"]:
+        elif self.action in ["update", "partial_update"]:
             return TeamUpdateSerializer
-        return TeamSerializer
+        elif self.request.method in ["POST", "DELETE"]:
+            return TeamMemberUpdateSerializer
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
@@ -48,9 +52,12 @@ class TeamViewSet(
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        tournament = get_object_or_404(
-            Tournament, pk=serializer.validated_data["tournament"]
-        )
+        try:
+            tournament = Tournament.objects.get(serializer.validated_data["tournament"])
+        except Tournament.DoesNotExist:
+            return Response(
+                {"error": "Tournament does not exist."}, status.HTTP_400_BAD_REQUEST
+            )
         obj = TournamentTeam(
             name=serializer.validated_data["name"],
             school=request.user.school,
@@ -68,32 +75,31 @@ class TeamViewSet(
         return Response(
             {
                 "users": UserTeammatesSrializer(
-                    User.objects.filter(school_id=request.user.school_id).data,
+                    User.objects.filter(school_id=request.user.school_id),
                     many=True,
-                )
+                ).data
             }
         )
 
     @action(methods=("post", "delete", "get"), detail=True)
     def manage_team(self, request, *args, **kwargs):
         tournament_team = get_object_or_404(TournamentTeam, pk=kwargs["pk"])
-        serializer = self.get_serializer_class()
         if request.method == "POST":
+            serializer_class = self.get_serializer_class()
             self._check_if_captain(tournament_team, request.user)
-            serializer(data=request.data).is_valid(raise_exception=True)
-            user_id = serializer.validated_data["user"]
-            invitation, _ = TournamentTeamMember.objects.get_or_create(
-                user_id=user_id, team=tournament_team
-            )
-        elif request.method == "DELETE":
-            self._check_if_captain(tournament_team, request.user)
-            serializer(data=request.data).is_valid(raise_exception=True)
-            user_id = serializer.validated_data["user"]
-            get_object_or_404(
-                TournamentTeamMember, tournament_team=tournament_team, user_id=user_id
-            ).delete()
+            serializer = serializer_class(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            user = serializer.validated_data["user"]
+            if serializer.validated_data["action"] == "add":
+                invitation, _ = TournamentTeamMember.objects.get_or_create(
+                    user=user, team=tournament_team
+                )
+            elif serializer.validated_data["action"] == "delete":
+                get_object_or_404(
+                    TournamentTeamMember, team=tournament_team, user=user
+                ).delete()
         return Response(
-            serializer(
+            TeamMemberSerializer(
                 tournament_team.team_members.all(),
                 many=True,
                 context=self.get_serializer_context(),
