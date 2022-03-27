@@ -104,6 +104,10 @@ class User(AbstractBaseUser, PermissionsMixin):
             <= timezone.now()
         )
 
+    @property
+    def full_name(self):
+        return f"{self.first_name} {self.last_name}"
+
     def save(self, *args, **kwargs):
         if not self.pk:
             self.nickname = f"{self.first_name}-{self.last_name}"

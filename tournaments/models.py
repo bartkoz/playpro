@@ -23,8 +23,25 @@ class TournamentTeam(models.Model):
     school = models.ForeignKey(School, on_delete=models.PROTECT)
     tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
-    members = models.ManyToManyField(User, related_name="team_members")
     captain = models.ForeignKey(User, on_delete=models.PROTECT)
 
     # class Meta:
     #     unique_together = ('captain', 'tournament')
+
+    def save(self, *args, **kwargs):
+        should_create_captain = False
+        if not self.pk:
+            should_create_captain = True
+        super().save(*args, **kwargs)
+        if should_create_captain:
+            TournamentTeamMember.objects.create(
+                user=self.captain, invitation_accepted=True, team=self
+            )
+
+
+class TournamentTeamMember(models.Model):
+    invitation_accepted = models.BooleanField(null=True)
+    user = models.ForeignKey(User, on_delete=models.PROTECT)
+    team = models.ForeignKey(
+        TournamentTeam, on_delete=models.CASCADE, related_name="team_members"
+    )
