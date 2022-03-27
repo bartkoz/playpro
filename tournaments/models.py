@@ -24,6 +24,7 @@ class TournamentTeam(models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
     name = models.CharField(max_length=255)
     captain = models.ForeignKey(User, on_delete=models.PROTECT)
+    group_score = models.IntegerField(default=0)
 
     # class Meta:
     #     unique_together = ('captain', 'tournament')
@@ -45,3 +46,8 @@ class TournamentTeamMember(models.Model):
     team = models.ForeignKey(
         TournamentTeam, on_delete=models.CASCADE, related_name="team_members"
     )
+
+
+class TournamentGroup(models.Model):
+    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
+    teams = models.ManyToManyField(TournamentTeam)

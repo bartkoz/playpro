@@ -1,6 +1,11 @@
 from rest_framework import serializers
 
-from tournaments.models import Tournament, TournamentTeam, TournamentTeamMember
+from tournaments.models import (
+    Tournament,
+    TournamentTeam,
+    TournamentTeamMember,
+    TournamentGroup,
+)
 from django.utils.translation import gettext_lazy as _
 
 
@@ -121,3 +126,29 @@ class InvitationSerializer(serializers.ModelSerializer):
                 _("Invitation has already been addressed.")
             )
         return obj
+
+
+class TournamentGroupTeamSerializer(serializers.ModelSerializer):
+
+    wins = serializers.SerializerMethodField()
+    losses = serializers.SerializerMethodField()
+    school = serializers.CharField(source="school.name")
+
+    class Meta:
+        model = TournamentTeam
+        fields = ("school", "name", "wins", "losses")
+
+    def get_wins(self, obj):
+        return 0
+
+    def get_losses(self, obj):
+        return 0
+
+
+class TournamentGroupSerializer(serializers.ModelSerializer):
+
+    teams = TournamentGroupTeamSerializer(many=True)
+
+    class Meta:
+        model = TournamentGroup
+        fields = ("teams", "tournament")
