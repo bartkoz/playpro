@@ -1,6 +1,7 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status
 from rest_framework.decorators import action
+from rest_framework.generics import RetrieveUpdateAPIView
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 
@@ -12,6 +13,7 @@ from tournaments.serializers import (
     TeamUpdateSerializer,
     TeamMemberUpdateSerializer,
     TeamMemberSerializer,
+    InvitationSerializer,
 )
 from users.models import User
 from users.serializers import UserTeammatesSrializer
@@ -109,3 +111,11 @@ class TeamViewSet(
                 context=self.get_serializer_context(),
             ).data
         )
+
+
+class InvitationAPIView(RetrieveUpdateAPIView):
+
+    serializer_class = InvitationSerializer
+
+    def get_queryset(self):
+        return TournamentTeamMember.objects.filter(user=self.request.user)

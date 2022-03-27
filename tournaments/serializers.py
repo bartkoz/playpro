@@ -98,3 +98,26 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     def get_invitation_accepted(self, obj):
         mapping = {None: "pending", False: "rejected", True: "accepted"}
         return mapping[obj.invitation_accepted]
+
+
+class InvitationSerializer(serializers.ModelSerializer):
+
+    tournament = serializers.CharField(source="team.tournament.name", read_only=True)
+    number_of_players = serializers.IntegerField(
+        source="team.tournament.team_size", read_only=True
+    )
+    platforms = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TournamentTeamMember
+        fields = ("tournament", "number_of_players", "platforms", "invitation_accepted")
+
+    def get_platforms(self, obj):
+        return obj.team.tournament.platforms.values_list("name", flat=True)
+
+    def validate_invitation_accepted(self, obj):
+        if self.instance.invitation_accepted is not None:
+            raise serializers.ValidationError(
+                _("Invitation has already been addressed.")
+            )
+        return obj
