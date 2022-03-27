@@ -100,14 +100,8 @@ class ProfilePasswordUpdateSerializer(serializers.Serializer):
     new_password = serializers.CharField(required=True)
 
     def validate_current_password(self, value):
-        if not self.context["request"].user.check_password("value"):
-            return serializers.ValidationError(_("Current password does not match"))
-        return value
-
-    def validate_new_password(self, value):
-        user = self.context["request"].user
-        user.set_password(value)
-        user.save()
+        if not self.context["request"].user.check_password(value):
+            raise serializers.ValidationError(_("Current password does not match"))
         return value
 
 

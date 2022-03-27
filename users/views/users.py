@@ -174,3 +174,11 @@ class ProfileAPIView(RetrieveUpdateAPIView):
         ):
             return ProfilePasswordUpdateSerializer
         return ProfileUpdateSerializer
+
+    def update(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        instance.set_password(serializer.validated_data["new_password"])
+        instance.save()
+        return Response(status=status.HTTP_200_OK)

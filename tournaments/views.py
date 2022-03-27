@@ -66,7 +66,8 @@ class TeamViewSet(
         )
         return Response({"id": obj.pk}, status=status.HTTP_201_CREATED)
 
-    def _check_if_captain(self, tournament, user):
+    @staticmethod
+    def _check_if_captain(tournament, user):
         if tournament.captain != user:
             return Response(status=status.HTTP_403_FORBIDDEN)
 
