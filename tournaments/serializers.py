@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 class TournamentListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Tournament
-        fields = ("name", "logo")
+        fields = ("name", "logo", "pk")
 
 
 class TournamentDetailSerializer(serializers.ModelSerializer):
@@ -51,16 +51,21 @@ class TeamMemberUpdateSerializer(serializers.ModelSerializer):
         model = TournamentTeamMember
         fields = ("user", "action")
 
-    def validate_members(self, value):
+    def validate_user(self, value):
         obj = self.context["obj"]
-        value.remove(obj.captain)
-        # TODO max team size
-        # if obj.tournament.team_size < len(obj.tournament.members.count() + 1):
-        #     raise serializers.ValidationError(
-        #         _(
-        #             f"Team can oan consist of maximum of {obj.tournament.team_size} teammates."
-        #         )
-        #     )
+        if obj.captain == value:
+            raise serializers.ValidationError(
+                _("You cannot remove captain from the team.")
+            )
+        if (
+            self.initial_data.get("action") == "add"
+            and obj.team_members.count() >= obj.tournament.team_size
+        ):
+            raise serializers.ValidationError(
+                _(
+                    f"Team can oan consist of maximum of {obj.tournament.team_size} teammates."
+                )
+            )
         if value.school != self.context["request"].user.school:
             raise serializers.ValidationError(
                 _("You may only invite people from your schoool.")

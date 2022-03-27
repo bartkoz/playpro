@@ -37,13 +37,12 @@ class TeamViewSet(
             return TeamCreateSerializer
         elif self.action in ["update", "partial_update"]:
             return TeamUpdateSerializer
-        elif self.request.method in ["POST", "DELETE"]:
+        elif self.request.method == "POST":
             return TeamMemberUpdateSerializer
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        if self.action in ["update", "partial_update"]:
-            context["obj"] = self.get_object()
+        context["obj"] = self.get_object()
         return context
 
     def get_queryset(self):
@@ -53,12 +52,14 @@ class TeamViewSet(
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            tournament = Tournament.objects.get(serializer.validated_data["tournament"])
+            tournament = Tournament.objects.get(
+                pk=serializer.validated_data["tournament"]
+            )
         except Tournament.DoesNotExist:
             return Response(
                 {"error": "Tournament does not exist."}, status.HTTP_400_BAD_REQUEST
             )
-        obj = TournamentTeam(
+        obj = TournamentTeam.objects.create(
             name=serializer.validated_data["name"],
             school=request.user.school,
             tournament=tournament,
@@ -88,7 +89,9 @@ class TeamViewSet(
         if request.method == "POST":
             serializer_class = self.get_serializer_class()
             self._check_if_captain(tournament_team, request.user)
-            serializer = serializer_class(data=request.data)
+            serializer = serializer_class(
+                data=request.data, context=self.get_serializer_context()
+            )
             serializer.is_valid(raise_exception=True)
             user = serializer.validated_data["user"]
             if serializer.validated_data["action"] == "add":
