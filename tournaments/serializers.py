@@ -1,6 +1,9 @@
 from rest_framework import serializers
 
 from tournaments.models import Tournament, TournamentTeam
+from django.utils.translation import gettext_lazy as _
+
+from users.models import User
 
 
 class TournamentListSerializer(serializers.ModelSerializer):
@@ -42,7 +45,24 @@ class TeamUpdateSerializer(serializers.ModelSerializer):
         fields = ("members",)
 
     def validate_members(self, value):
-        team_captain = self.context["obj"].captain
-        if team_captain not in value:
-            value.append(team_captain)
+        obj = self.context["obj"]
+        if obj.captain not in value:
+            value.append(obj.captain)
+        if obj.tournament.team_size < len(value):
+            raise serializers.ValidationError(
+                _(
+                    f"Team can oan consist of maximum of {obj.tournament.team_size} teammates."
+                )
+            )
+        if any(
+            [
+                x != self.context["request"].user
+                for x in User.objects.filter(pk__in=[x.pk for x in value])
+                .prefetch_related("school")
+                .values_list("school_id", flat=True)
+            ]
+        ):
+            raise serializers.ValidationError(
+                _("You may only invite people from your schoool.")
+            )
         return value

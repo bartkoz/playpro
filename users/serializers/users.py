@@ -111,7 +111,7 @@ class ProfilePasswordUpdateSerializer(serializers.Serializer):
         return value
 
 
-class UserTeammateserializer(serializers.ModelSerializer):
+class UserTeammatesSrializer(serializers.ModelSerializer):
 
     avatar = serializers.URLField(source="avatar.image.url")
 

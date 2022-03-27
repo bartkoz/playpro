@@ -12,7 +12,7 @@ from tournaments.serializers import (
     TeamUpdateSerializer,
 )
 from users.models import User
-from users.serializers import UserTeammateserializer
+from users.serializers import UserTeammatesSrializer
 
 
 class TournamentBaseViewSet(ReadOnlyModelViewSet):
@@ -29,9 +29,6 @@ class TeamViewSet(
     mixins.UpdateModelMixin,
     GenericViewSet,
 ):
-
-    permission_classes = ()
-
     def get_serializer_class(self):
         if self.action == "create":
             return TeamCreateSerializer
@@ -44,8 +41,7 @@ class TeamViewSet(
         return context
 
     def get_queryset(self):
-        # return TournamentTeam.objects.filter(captain=self.request.user)
-        return TournamentTeam.objects.filter(captain=User.objects.first())
+        return TournamentTeam.objects.filter(captain=self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
@@ -61,17 +57,11 @@ class TeamViewSet(
         )
         return Response({"id": obj.pk}, status=status.HTTP_201_CREATED)
 
-    # @action(methods=('post',), detail=True)
-    # def new(self, request, *args, **kwargs):
-    #     tournament = get_object_or_404(Tournament, pk=kwargs.get('pk'))
-    #     # TournamentTeam
-    #     return Response()
-
     @action(methods=("get",), detail=False)
     def teammates(self, request):
         return Response(
             {
-                "users": UserTeammateserializer(
+                "users": UserTeammatesSrializer(
                     User.objects.filter(school_id=request.user.school_id).data,
                     many=True,
                 )
