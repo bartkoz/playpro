@@ -21,7 +21,9 @@ from users.serializers import (
     EmailPasswordChangedSerializer,
     ProfileSerializer,
     ProfileUpdateSerializer,
-    ProfilePasswordUpdateSerializer, SchoolSerializer, AvatarSerializer,
+    ProfilePasswordUpdateSerializer,
+    SchoolSerializer,
+    AvatarSerializer,
 )
 
 from rest_framework_simplejwt.tokens import RefreshToken
