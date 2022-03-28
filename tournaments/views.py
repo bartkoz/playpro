@@ -145,11 +145,11 @@ class RankingAPIView(APIView):
         )
 
 
-class TournamentMatchViewSet(ModelViewSet):
+class TournamentMatchViewSet(GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
     def get_serializer_class(self):
-        if self.action == "list":
-            return TournamentMatchSerializer
-        return TournamentMatchUpdateSerializer
+        if self.action in ["update", "partial_update"]:
+            return TournamentMatchUpdateSerializer
+        return TournamentMatchSerializer
 
     def get_queryset(self):
         return TournamentMatch.objects.filter(
