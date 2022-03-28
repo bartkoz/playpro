@@ -145,7 +145,12 @@ class RankingAPIView(APIView):
         )
 
 
-class TournamentMatchViewSet(GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.UpdateModelMixin):
+class TournamentMatchViewSet(
+    GenericViewSet,
+    mixins.ListModelMixin,
+    mixins.RetrieveModelMixin,
+    mixins.UpdateModelMixin,
+):
     def get_serializer_class(self):
         if self.action in ["update", "partial_update"]:
             return TournamentMatchUpdateSerializer
