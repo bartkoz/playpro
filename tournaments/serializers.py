@@ -1,3 +1,4 @@
+from django.db.models import Sum, F
 from rest_framework import serializers
 
 from tournaments.models import (
@@ -130,25 +131,23 @@ class InvitationSerializer(serializers.ModelSerializer):
 
 class TournamentGroupTeamSerializer(serializers.ModelSerializer):
 
-    wins = serializers.SerializerMethodField()
-    losses = serializers.SerializerMethodField()
     school = serializers.CharField(source="school.name")
 
     class Meta:
         model = TournamentTeam
         fields = ("school", "name", "wins", "losses")
 
-    def get_wins(self, obj):
-        return 0
-
-    def get_losses(self, obj):
-        return 0
-
 
 class TournamentGroupSerializer(serializers.ModelSerializer):
 
-    teams = TournamentGroupTeamSerializer(many=True)
+    teams = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentGroup
         fields = ("teams", "tournament")
+
+    def get_teams(self, obj):
+        return TournamentGroupTeamSerializer(
+            obj.teams.annotate(result=Sum(F("wins") - F("losses"))).order_by("-result"),
+            many=True,
+        ).data
