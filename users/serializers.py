@@ -4,7 +4,7 @@ from django.contrib.auth.password_validation import (
 from django.core.exceptions import ValidationError
 from rest_framework import serializers
 
-from users.models import User
+from users.models import User, School, UserAvatar
 from django.utils.translation import gettext_lazy as _
 
 
@@ -112,3 +112,15 @@ class UserTeammatesSrializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("pk", "avatar", "nickname", "first_name", "last_name")
+
+
+class SchoolSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = School
+        fields = ("name", "id")
+
+
+class AvatarSerializer(serializers.ModelSerializer):
+    class Meta:
+        fields = ("image",)
+        model = UserAvatar
