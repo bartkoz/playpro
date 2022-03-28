@@ -86,6 +86,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     ea_games_id = models.CharField(max_length=255, blank=True, default="")
     ps_network_id = models.CharField(max_length=255, blank=True, default="")
     riot_id = models.CharField(max_length=255, blank=True, default="")
+    last_email_reset = models.DateTimeField(auto_now=True)
 
     objects = UserManager()
 
@@ -99,7 +100,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     @property
     def resend_activation_mail_available(self):
         return (
-            self.activation_mail_sent
+            self.last_email_reset
             + timedelta(minutes=getattr(settings, "EMAIL_RESEND_DELAY"))
             <= timezone.now()
         )

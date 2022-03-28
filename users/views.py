@@ -1,6 +1,7 @@
 from datetime import datetime
 
 import pytz
+from coreapi.compat import force_text
 from django.contrib.auth import get_user
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.mail import EmailMessage
@@ -62,7 +63,7 @@ class UserCreateAPIView(APIView):
                     status=status.HTTP_400_BAD_REQUEST,
                 )
             except User.DoesNotExist:
-                data.pop("password2")
+                data.pop("tos_accepted")
                 user = User(**data)
                 user.set_password(data.get("password"))
                 # user.is_active = False
@@ -103,7 +104,7 @@ class UserPasswordResetLinkGenerateAPIView(APIView):
                 )
                 email.content_subtype = "html"
                 email.send()
-                user.activation_mail_sent = datetime.utcnow().replace(tzinfo=pytz.UTC)
+                user.last_email_reset = datetime.utcnow().replace(tzinfo=pytz.UTC)
                 user.save()
             else:
                 return Response(
@@ -142,15 +143,23 @@ class UserPasswordResetAPIView(APIView):
             user = None
         return user
 
+    def _get_user_or_return_error(self, uidb64):
+        uid = urlsafe_base64_decode(uidb64).decode("utf-8")
+        try:
+            user = User.objects.get(pk=uid)
+        except User.DoesNotExist:
+            return Response({"Email not found."}, status=status.HTTP_400_BAD_REQUEST)
+        return user
+
     def get(self, request, *args, **kwargs):
-        user = get_user(kwargs["uidb64"])
+        user = self._get_user_or_return_error(kwargs["uidb64"])
         token_correct = self.token_generator().check_token(user, kwargs["token"])
         if not user or not token_correct:
             return Response(status=status.HTTP_403_FORBIDDEN)
         return Response(status=status.HTTP_200_OK)
 
     def post(self, request, *args, **kwargs):
-        user = get_user(kwargs["uidb64"])
+        user = self._get_user_or_return_error(kwargs["uidb64"])
         token_correct = self.token_generator().check_token(user, kwargs["token"])
 
         if user and token_correct:

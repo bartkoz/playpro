@@ -58,18 +58,18 @@ class TeamMemberUpdateSerializer(serializers.ModelSerializer):
         fields = ("user", "action")
 
     def validate_user(self, value):
-        obj = self.context["obj"]
-        if obj.captain == value:
+        team_obj = self.context["obj"]
+        if team_obj.captain == value:
             raise serializers.ValidationError(
                 _("You cannot remove captain from the team.")
             )
         if (
             self.initial_data.get("action") == "add"
-            and obj.team_members.count() >= obj.tournament.team_size
+            and team_obj.team_members.count() >= team_obj.tournament.team_size
         ):
             raise serializers.ValidationError(
                 _(
-                    f"Team can oan consist of maximum of {obj.tournament.team_size} teammates."
+                    f"Team can oan consist of maximum of {team_obj.tournament.team_size} teammates."
                 )
             )
         if value.school != self.context["request"].user.school:
@@ -86,11 +86,12 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     is_captain = serializers.SerializerMethodField()
     avatar = serializers.URLField(source="user.avatar.image.url", read_only=True)
     invitation_accepted = serializers.SerializerMethodField()
+    user_pk = serializers.IntegerField(source="user.pk", read_only=True)
 
     class Meta:
         model = TournamentTeamMember
         fields = (
-            "pk",
+            "user_pk",
             "full_name",
             "email",
             "is_captain",

@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
@@ -51,7 +52,9 @@ class TeamViewSet(
 
     def get_serializer_context(self):
         context = super().get_serializer_context()
-        context["obj"] = self.get_object()
+        if self.action != "create":
+            context["obj"] = self.get_object()
+        context["action"] = self.action
         return context
 
     def get_queryset(self):
@@ -82,7 +85,7 @@ class TeamViewSet(
             return Response(status=status.HTTP_403_FORBIDDEN)
 
     @action(methods=("get",), detail=False)
-    def teammates(self, request):
+    def available_teammates(self, request):
         return Response(
             {
                 "users": UserTeammatesSrializer(
@@ -120,7 +123,9 @@ class TeamViewSet(
         )
 
 
-class InvitationAPIView(RetrieveUpdateAPIView):
+class InvitationViewSet(
+    GenericViewSet, ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+):
 
     serializer_class = InvitationSerializer
 
