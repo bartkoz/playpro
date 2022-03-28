@@ -24,6 +24,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             "school_year",
             "school_email",
             "tos_accepted",
+            "graduation_year"
         )
 
     def validate(self, attrs):
