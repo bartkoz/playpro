@@ -71,10 +71,14 @@ class TournamentMatch(models.Model):
     winner = models.ForeignKey(
         TournamentTeam, on_delete=models.PROTECT, blank=True, null=True
     )
-    is_contested = models.BooleanField(blank=True, null=True)
+    is_contested = models.BooleanField(default=False)
+    is_final = models.BooleanField(default=False)
     contest_screenshot = models.ImageField(blank=True, null=True)
+    contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
 
     def save(self, *args, **kwargs):
         if self.winner != self.initial_winner and self.initial_winner:
             self.is_contested = True
+        elif self.winner == self.initial_winner and self.initial_winner:
+            self.is_final = True
         super().save(*args, **kwargs)

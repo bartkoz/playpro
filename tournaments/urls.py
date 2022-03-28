@@ -6,6 +6,7 @@ from tournaments.views import (
     TeamViewSet,
     RankingAPIView,
     InvitationViewSet,
+    TournamentMatchViewSet,
 )
 
 team_viewset = routers.SimpleRouter()
@@ -19,13 +20,21 @@ invitation_viewset.register(
     r"invitations", InvitationViewSet, basename="tournament_invitations"
 )
 
+tournament_viewset = routers.SimpleRouter()
+tournament_viewset.register(
+    r"matches", TournamentMatchViewSet, basename="tournament_matches"
+)
+
 
 urlpatterns = [
     path("rankings/", RankingAPIView.as_view()),
     path(
         "",
         include(
-            team_viewset.urls + invitation_viewset.urls + tournament_base_router.urls
+            team_viewset.urls
+            + invitation_viewset.urls
+            + tournament_viewset.urls
+            + tournament_base_router.urls
         ),
     ),
 ]

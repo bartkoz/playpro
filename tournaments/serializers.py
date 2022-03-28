@@ -6,6 +6,7 @@ from tournaments.models import (
     TournamentTeam,
     TournamentTeamMember,
     TournamentGroup,
+    TournamentMatch,
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -152,3 +153,42 @@ class TournamentGroupSerializer(serializers.ModelSerializer):
             obj.teams.annotate(result=Sum(F("wins") - F("losses"))).order_by("-result"),
             many=True,
         ).data
+
+
+class TournamentMatchContestantsSerializer(serializers.ModelSerializer):
+
+    team_members = TeamMemberSerializer(many=True)
+
+    class Meta:
+        model = TournamentTeam
+        fields = ("name", "team_members")
+
+
+class TournamentMatchSerializer(serializers.ModelSerializer):
+
+    contestants = TournamentMatchContestantsSerializer(many=True)
+    tournament = serializers.CharField(source="tournament.name")
+    winner = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TournamentMatch
+        fields = "__all__"
+
+    def get_winner(self, obj):
+        if obj.is_contested:
+            return "contested"
+        elif obj.is_final:
+            return (
+                "winner"
+                if self.context["request"].user
+                in self.context["instance"].winner.team_members
+                else "loser"
+            )
+        else:
+            return "pending"
+
+
+class TournamentMatchUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TournamentMatch
+        fields = ("winner",)

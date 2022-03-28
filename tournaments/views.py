@@ -1,17 +1,17 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status
 from rest_framework.decorators import action
-from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet, ModelViewSet
 
 from tournaments.models import (
     Tournament,
     TournamentTeam,
     TournamentTeamMember,
     TournamentGroup,
+    TournamentMatch,
 )
 from tournaments.serializers import (
     TournamentListSerializer,
@@ -22,6 +22,8 @@ from tournaments.serializers import (
     TeamMemberSerializer,
     InvitationSerializer,
     TournamentGroupSerializer,
+    TournamentMatchSerializer,
+    TournamentMatchUpdateSerializer,
 )
 from users.models import User
 from users.serializers import UserTeammatesSrializer
@@ -140,4 +142,16 @@ class RankingAPIView(APIView):
                 TournamentGroup.objects.filter(teams__team_members__user=request.user),
                 many=True,
             ).data
+        )
+
+
+class TournamentMatchViewSet(ModelViewSet):
+    def get_serializer_class(self):
+        if self.action == "list":
+            return TournamentMatchSerializer
+        return TournamentMatchUpdateSerializer
+
+    def get_queryset(self):
+        return TournamentMatch.objects.filter(
+            contestants__team_members__user=self.request.user
         )
