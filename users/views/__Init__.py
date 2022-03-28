@@ -1,2 +1,2 @@
-from .misc import *
-from .users import *
+from users.views.misc import *
+from users.views.users import *
