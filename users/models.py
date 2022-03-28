@@ -87,6 +87,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     ps_network_id = models.CharField(max_length=255, blank=True, default="")
     riot_id = models.CharField(max_length=255, blank=True, default="")
     last_email_reset = models.DateTimeField(auto_now=True)
+    graduation_year = models.CharField(max_length=4)
 
     objects = UserManager()
 
