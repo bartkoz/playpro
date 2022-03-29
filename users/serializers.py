@@ -21,7 +21,6 @@ class UserCreateSerializer(serializers.ModelSerializer):
             "user_type",
             "dob",
             "school",
-            "school_year",
             "school_email",
             "tos_accepted",
             "graduation_year"
@@ -34,8 +33,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         if User.objects.filter(email=attrs.get("email")).exists():
             errors.append({"email": _("Email already in use!")})
         if attrs.get("user_type") == User.UserType.STUDENT:
-            if not attrs.get("school_year"):
-                errors.append({"school_year": _("Please specify your school year.")})
+            if not attrs.get("graduation_year"):
+                errors.append({"graduation_year": _("Please specify your graduation year.")})
         if not attrs.get("tos_accepted"):
             errors.append({"tos": _("You have to accept terms of service.")})
         password_validators = get_default_password_validators()

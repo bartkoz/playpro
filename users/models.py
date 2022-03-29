@@ -77,7 +77,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     user_type = models.IntegerField(choices=UserType.choices)
     dob = models.DateField()
     school = models.ForeignKey("School", on_delete=models.CASCADE)
-    school_year = models.IntegerField(blank=True, null=True)
     school_email = models.EmailField()
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
     avatar = models.ForeignKey(UserAvatar, on_delete=models.SET_NULL, null=True)
