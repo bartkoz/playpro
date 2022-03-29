@@ -87,7 +87,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "dob",
             "school_email",
             "school_name",
-            "school_year",
+            "graduation_year",
             "epic_games_id",
             "ea_games_id",
             "ps_network_id",
