@@ -188,11 +188,15 @@ class ProfileAPIView(RetrieveUpdateAPIView):
 
     def update(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(data=request.data)
+        serializer = self.get_serializer(data=request.data, *args, **kwargs)
         serializer.is_valid(raise_exception=True)
-        instance.set_password(serializer.validated_data["new_password"])
+        if isinstance(serializer, ProfilePasswordUpdateSerializer):
+            instance.set_password(serializer.validated_data["new_password"])
+        else:
+            for k, v in serializer.validated_data.items():
+                setattr(instance, k, v)
         instance.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response(ProfileUpdateSerializer(instance).data, status=status.HTTP_200_OK)
 
 
 class SchoolListAPIView(ListAPIView):
