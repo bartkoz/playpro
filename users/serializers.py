@@ -92,6 +92,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "ea_games_id",
             "ps_network_id",
             "riot_id",
+            "nickname"
         )
         model = User
 
