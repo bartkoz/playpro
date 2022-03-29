@@ -36,6 +36,8 @@ class UserCreateSerializer(serializers.ModelSerializer):
         if attrs.get("user_type") == User.UserType.STUDENT:
             if not attrs.get("school_year"):
                 errors.append({"school_year": _("Please specify your school year.")})
+        if not attrs.get("tos_accepted"):
+            errors.append({"tos": _("You have to accept terms of service.")})
         password_validators = get_default_password_validators()
         for validator in password_validators:
             try:
