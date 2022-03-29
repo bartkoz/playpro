@@ -196,7 +196,7 @@ class ProfileAPIView(RetrieveUpdateAPIView):
             for k, v in serializer.validated_data.items():
                 setattr(instance, k, v)
         instance.save()
-        return Response(ProfileUpdateSerializer(instance).data, status=status.HTTP_200_OK)
+        return Response(ProfileSerializer(instance).data, status=status.HTTP_200_OK)
 
 
 class SchoolListAPIView(ListAPIView):
