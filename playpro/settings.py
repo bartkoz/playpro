@@ -163,11 +163,11 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 CORS_ALLOW_ALL_ORIGINS = True
 
 CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
+    "default": {
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [("127.0.0.1", 6379)],
         },
     },
 }
-ASGI_APPLICATION = 'playpro.asgi.application'
+ASGI_APPLICATION = "playpro.asgi.application"

@@ -10,11 +10,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "playpro.settings")
 
 django.setup()
 
-application = ProtocolTypeRouter({
-  "http": AsgiHandler(),
-'websocket': AuthMiddlewareStack(
-    URLRouter(
-        urls.websocket_urlpatterns
-    )
-),
-})
+application = ProtocolTypeRouter(
+    {
+        "http": AsgiHandler(),
+        "websocket": AuthMiddlewareStack(URLRouter(urls.websocket_urlpatterns)),
+    }
+)

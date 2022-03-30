@@ -23,7 +23,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
             "school",
             "school_email",
             "tos_accepted",
-            "graduation_year"
+            "graduation_year",
         )
 
     def validate(self, attrs):
@@ -34,7 +34,9 @@ class UserCreateSerializer(serializers.ModelSerializer):
             errors.append({"email": _("Email already in use!")})
         if attrs.get("user_type") == User.UserType.STUDENT:
             if not attrs.get("graduation_year"):
-                errors.append({"graduation_year": _("Please specify your graduation year.")})
+                errors.append(
+                    {"graduation_year": _("Please specify your graduation year.")}
+                )
         if not attrs.get("tos_accepted"):
             errors.append({"tos": _("You have to accept terms of service.")})
         password_validators = get_default_password_validators()
@@ -92,7 +94,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "ea_games_id",
             "ps_network_id",
             "riot_id",
-            "nickname"
+            "nickname",
         )
         model = User
 

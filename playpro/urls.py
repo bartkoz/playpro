@@ -31,5 +31,5 @@ urlpatterns = [
 ]
 
 websocket_urlpatterns = [
-    path('notifications/<str:name>/', sockets.NotificationConsumer.as_asgi()),
+    path("notifications/<str:name>/", sockets.NotificationConsumer.as_asgi()),
 ]
