@@ -4,6 +4,8 @@ from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
 from rest_framework import permissions
 
+from playpro import sockets
+
 schema_view = get_schema_view(
     openapi.Info(
         title="API",
@@ -26,4 +28,8 @@ urlpatterns = [
     ),
     path("users/", include("users.urls")),
     path("tournaments/", include("tournaments.urls")),
+]
+
+websocket_urlpatterns = [
+    path('notifications/<str:name>/', sockets.NotificationConsumer.as_asgi()),
 ]
