@@ -95,6 +95,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "ps_network_id",
             "riot_id",
             "nickname",
+            "notifications_channel",
         )
         model = User
 

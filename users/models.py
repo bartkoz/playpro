@@ -7,10 +7,15 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
+from shortuuid import ShortUUID
 
 
 def avatar_upload_path(user, filename):
     return f"users/{user.id}/{uuid.uuid4()}"
+
+
+def create_notification_channel():
+    return ShortUUID(alphabet=settings.NOTIFICATION_CHARSET).random(length=10)
 
 
 class UserManager(BaseUserManager):
@@ -87,6 +92,9 @@ class User(AbstractBaseUser, PermissionsMixin):
     riot_id = models.CharField(max_length=255, blank=True, default="")
     last_email_reset = models.DateTimeField(auto_now=True)
     graduation_year = models.CharField(max_length=4)
+    notifications_channel = models.CharField(
+        default=create_notification_channel(), max_length=10
+    )
 
     objects = UserManager()
 
