@@ -1,17 +1,31 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
+from django.contrib.auth.models import AnonymousUser
+from jwt import decode as jwt_decode
+from django.conf import settings
+from urllib.parse import parse_qs
+
+from users.models import User
+
+
+def get_user(scope):
+    try:
+        token = parse_qs(scope["query_string"].decode("utf8")).get("token")[0]
+        decoded_data = jwt_decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+        return User.objects.get(pk=decoded_data.get("user_id"))
+    except User.DoesNotExist:
+        return AnonymousUser()
 
 
 class NotificationConsumer(WebsocketConsumer):
     def connect(self):
-        self.room_name = self.scope["url_route"]["kwargs"]["name"]
-        self.channel_group_name = "test"
-        self.user = self.scope["user"]
-        # if self.user.is_authenticated:
-        #     self.accept()
-        # else:
-        #     self.close()
+        self.user = get_user(self.scope)
+        if self.user.is_authenticated:
+            self.channel_group_name = self.user.notifications_channel
+            self.accept()
+        else:
+            self.close()
         async_to_sync(self.channel_layer.group_add)(
             self.channel_group_name, self.channel_name
         )
