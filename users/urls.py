@@ -11,6 +11,8 @@ from users.views import (
     ProfileAPIView,
 )
 
+app_name = "users"
+
 urlpatterns = [
     path("email-uniqueness/<str:email>/", EmailUniquenessAPIView.as_view()),
     path("schools/", SchoolListAPIView.as_view()),

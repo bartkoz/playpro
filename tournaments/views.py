@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet, ModelViewSet
 
+from notifications.signals import invitation_revoked
 from tournaments.models import (
     Tournament,
     TournamentTeam,
@@ -120,9 +121,12 @@ class TeamViewSet(
                     and user != request.user
                 ):
                     Response(status=status.HTTP_403_FORBIDDEN)
-                get_object_or_404(
+                obj = get_object_or_404(
                     TournamentTeamMember, team=tournament_team, user=user
-                ).delete()
+                )
+                if obj.user != request.user:
+                    invitation_revoked.send(instance=obj)
+                obj.delete()
                 if self._check_if_captain(tournament_team, request.user):
                     tournament_team.captain = (
                         tournament_team.team_members.order_by("created_at").first().user

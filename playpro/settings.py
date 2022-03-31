@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     "channels",
     "users",
     "tournaments",
+    "notifications",
 ]
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 MIDDLEWARE = [
@@ -172,3 +173,4 @@ CHANNEL_LAYERS = {
 }
 ASGI_APPLICATION = "playpro.asgi.application"
 NOTIFICATION_CHARSET = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
+BASE_URL = "https://playpro.gg"

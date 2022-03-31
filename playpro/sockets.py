@@ -1,12 +1,14 @@
 import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
-from channels.layers import get_channel_layer
 from django.contrib.auth.models import AnonymousUser
+from django.urls import reverse
 from jwt import decode as jwt_decode
 from django.conf import settings
 from urllib.parse import parse_qs
 
+from notifications.enums import NotificationTypes
+from notifications.models import Notification
 from users.models import User
 
 
@@ -50,8 +52,31 @@ class NotificationConsumer(WebsocketConsumer):
 
         self.send(text_data=json.dumps({"message": message}))
 
+    def __build_single_notification(self, obj):
+        if obj.meta.get("type") == NotificationTypes.INVITATION.value:
+            msg = {
+                "type": "notification",
+                "message": {
+                    "url": f"{settings.BASE_URL}{reverse('tournaments:tournament_invitations-detail', kwargs={'pk': obj.meta['obj_pk']})}",
+                    "content": f"You have been invited to the team {obj.meta['team_name']} in {obj.meta['tournament_name']} tournament.",
+                    "read": obj.read,
+                },
+            }
+        else:
+            msg = {
+                "type": "notification",
+                "message": {
+                    "url": "",
+                    "message": f"Your invitation to the team {obj.meta['team_name']} in {obj.meta['tournament_name']} tournament has been revoked.",
+                    "read": obj.read,
+                },
+            }
+        return msg
+
     def send_initial_msg(self):
-        message = "placeholdermsg"
-        async_to_sync(self.channel_layer.group_send)(
-            self.channel_group_name, {"type": "notification", "message": message}
-        )
+        for notification in Notification.objects.filter(user=self.user).only(
+            "meta", "read"
+        ):
+            async_to_sync(self.channel_layer.group_send)(
+                self.channel_group_name, self.__build_single_notification(notification)
+            )

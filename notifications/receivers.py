@@ -1,7 +1,75 @@
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
+from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.urls import reverse
+
+from notifications.enums import NotificationTypes
+from notifications.models import Notification
+from notifications.signals import invitation_revoked
+from tournaments.models import TournamentTeamMember
 
 
-# @receiver(post_save, sender=Comment)
-# def increment_comments_count(sender, instance, **kwargs):
-#     pass
+@receiver(post_save, sender=TournamentTeamMember)
+def notify_user_about_new_invitation(sender, instance, created, **kwargs):
+    if created:
+        channel_layer = get_channel_layer()
+        url = "{}{}".format(
+            settings.BASE_URL,
+            reverse(
+                "tournaments:tournament_invitations-detail", kwargs={"pk": instance.pk}
+            ),
+        )
+        content = "You have been invited to the team {} in {} tournament.".format(
+            instance.team.name, instance.team.tournament.name
+        )
+        async_to_sync(channel_layer.group_send)(
+            instance.user.notifications_channel,
+            {
+                "type": "notification",
+                "message": {
+                    "url": url,
+                    "content": content,
+                    "read": False,
+                },
+            },
+        )
+        Notification.objects.create(
+            user=instance.user,
+            meta={
+                "type": NotificationTypes.INVITATION.value,
+                "obj_pk": instance.pk,
+                "tournament_name": instance.team.tournament.name,
+                "team_name": instance.team.name,
+            },
+        )
+
+
+@receiver(invitation_revoked)
+def notify_user_about_invitation_revoked(instance, **kwargs):
+    channel_layer = get_channel_layer()
+    message = (
+        "Your invitation to the team {} in {} tournament has been revoked.".format(
+            instance.team.name, instance.team.tournament.name
+        )
+    )
+    async_to_sync(channel_layer.group_send)(
+        instance.user.notifications_channel,
+        {
+            "type": "notification",
+            "message": {
+                "url": "",
+                "message": message,
+                "read": False,
+            },
+        },
+    )
+    Notification.objects.create(
+        user=instance.user,
+        meta={
+            "type": NotificationTypes.INVITATION_REVOKE.value,
+            "tournament_name": instance.team.tournament.name,
+            "team_name": instance.team.name,
+        },
+    )
