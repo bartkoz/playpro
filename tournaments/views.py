@@ -125,14 +125,12 @@ class TeamViewSet(
                 ).delete()
                 if self._check_if_captain(tournament_team, request.user):
                     tournament_team.captain = (
-                        tournament_team.team_members.order_by("-created_at")
-                        .first()
-                        .user
+                        tournament_team.team_members.order_by("created_at").first().user
                     )
                     tournament_team.save()
         return Response(
             TeamMemberSerializer(
-                tournament_team.team_members.all(),
+                tournament_team.team_members.order_by("created_at"),
                 many=True,
                 context=self.get_serializer_context(),
             ).data
