@@ -1,15 +1,16 @@
 from django.db import models
 
+from playpro.abstract import TimestampAbstractModel
 from users.models import School, User
 from django.utils.translation import gettext_lazy as _
 
 
-class TournamentPlatform(models.Model):
+class TournamentPlatform(TimestampAbstractModel, models.Model):
 
     name = models.CharField(max_length=255)
 
 
-class Tournament(models.Model):
+class Tournament(TimestampAbstractModel, models.Model):
     registration_open_date = models.DateTimeField()
     registration_close_date = models.DateTimeField()
     registration_check_in_date = models.DateTimeField()
@@ -19,7 +20,7 @@ class Tournament(models.Model):
     team_size = models.PositiveIntegerField()
 
 
-class TournamentTeam(models.Model):
+class TournamentTeam(TimestampAbstractModel, models.Model):
 
     school = models.ForeignKey(School, on_delete=models.PROTECT)
     tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
@@ -29,8 +30,8 @@ class TournamentTeam(models.Model):
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
 
-    # class Meta:
-    #     unique_together = ('captain', 'tournament')
+    class Meta:
+        unique_together = ('captain', 'tournament')
 
     def save(self, *args, **kwargs):
         should_create_captain = False
@@ -43,7 +44,7 @@ class TournamentTeam(models.Model):
             )
 
 
-class TournamentTeamMember(models.Model):
+class TournamentTeamMember(TimestampAbstractModel, models.Model):
     invitation_accepted = models.BooleanField(null=True)
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     team = models.ForeignKey(
@@ -51,12 +52,12 @@ class TournamentTeamMember(models.Model):
     )
 
 
-class TournamentGroup(models.Model):
+class TournamentGroup(TimestampAbstractModel, models.Model):
     tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
     teams = models.ManyToManyField(TournamentTeam)
 
 
-class TournamentMatch(models.Model):
+class TournamentMatch(TimestampAbstractModel, models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.initial_winner = self.winner
@@ -75,6 +76,7 @@ class TournamentMatch(models.Model):
     is_final = models.BooleanField(default=False)
     contest_screenshot = models.ImageField(blank=True, null=True)
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
+    round_number = models.IntegerField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
         if self.winner != self.initial_winner and self.initial_winner:

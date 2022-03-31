@@ -9,6 +9,8 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 from shortuuid import ShortUUID
 
+from playpro.abstract import TimestampAbstractModel
+
 
 def avatar_upload_path(user, filename):
     return f"users/{user.id}/{uuid.uuid4()}"
@@ -58,7 +60,7 @@ class UserAvatar(models.Model):
     image = models.ImageField()
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(TimestampAbstractModel, AbstractBaseUser, PermissionsMixin):
     class UserType(models.IntegerChoices):
         STUDENT = 0, _("Student")
         STAFF = 1, _("Staff")

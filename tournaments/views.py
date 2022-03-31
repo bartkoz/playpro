@@ -83,8 +83,9 @@ class TeamViewSet(
 
     @staticmethod
     def _check_if_captain(tournament, user):
-        if tournament.captain != user:
-            return Response(status=status.HTTP_403_FORBIDDEN)
+        if tournament.captain == user:
+            return True
+        return False
 
     @action(methods=("get",), detail=False)
     def available_teammates(self, request):
@@ -102,20 +103,27 @@ class TeamViewSet(
         tournament_team = get_object_or_404(TournamentTeam, pk=kwargs["pk"])
         if request.method == "POST":
             serializer_class = self.get_serializer_class()
-            self._check_if_captain(tournament_team, request.user)
             serializer = serializer_class(
                 data=request.data, context=self.get_serializer_context()
             )
             serializer.is_valid(raise_exception=True)
             user = serializer.validated_data["user"]
             if serializer.validated_data["action"] == "add":
+                if not self._check_if_captain(tournament_team, request.user):
+                    Response(status=status.HTTP_403_FORBIDDEN)
                 invitation, _ = TournamentTeamMember.objects.get_or_create(
                     user=user, team=tournament_team
                 )
             elif serializer.validated_data["action"] == "delete":
+                if not self._check_if_captain(tournament_team, request.user) and user != request.user:
+                    Response(status=status.HTTP_403_FORBIDDEN)
                 get_object_or_404(
                     TournamentTeamMember, team=tournament_team, user=user
                 ).delete()
+                if self._check_if_captain(tournament_team, request.user):
+                    # TODO
+                    tournament_team.captain = TournamentTeamMember.objects.get(team=tournament_team).team_members.order_by('-created_at').first()
+                    tournament_team.save()
         return Response(
             TeamMemberSerializer(
                 tournament_team.team_members.all(),
