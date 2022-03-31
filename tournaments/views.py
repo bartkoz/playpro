@@ -115,14 +115,20 @@ class TeamViewSet(
                     user=user, team=tournament_team
                 )
             elif serializer.validated_data["action"] == "delete":
-                if not self._check_if_captain(tournament_team, request.user) and user != request.user:
+                if (
+                    not self._check_if_captain(tournament_team, request.user)
+                    and user != request.user
+                ):
                     Response(status=status.HTTP_403_FORBIDDEN)
                 get_object_or_404(
                     TournamentTeamMember, team=tournament_team, user=user
                 ).delete()
                 if self._check_if_captain(tournament_team, request.user):
-                    # TODO
-                    tournament_team.captain = TournamentTeamMember.objects.get(team=tournament_team).team_members.order_by('-created_at').first()
+                    tournament_team.captain = (
+                        tournament_team.team_members.order_by("-created_at")
+                        .first()
+                        .user
+                    )
                     tournament_team.save()
         return Response(
             TeamMemberSerializer(

@@ -7,24 +7,26 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0006_alter_user_notifications_channel'),
+        ("users", "0006_alter_user_notifications_channel"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='user',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="user",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='user',
-            name='updated_at',
+            model_name="user",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AlterField(
-            model_name='user',
-            name='notifications_channel',
-            field=models.CharField(default='3PC91R5F7R', max_length=10),
+            model_name="user",
+            name="notifications_channel",
+            field=models.CharField(default="3PC91R5F7R", max_length=10),
         ),
     ]

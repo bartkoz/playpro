@@ -31,7 +31,7 @@ class TournamentTeam(TimestampAbstractModel, models.Model):
     losses = models.IntegerField(default=0)
 
     class Meta:
-        unique_together = ('captain', 'tournament')
+        unique_together = ("captain", "tournament")
 
     def save(self, *args, **kwargs):
         should_create_captain = False

@@ -60,10 +60,10 @@ class TeamMemberUpdateSerializer(serializers.ModelSerializer):
 
     def validate_user(self, value):
         team_obj = self.context["obj"]
-        if team_obj.captain == value:
-            raise serializers.ValidationError(
-                _("You cannot remove captain from the team.")
-            )
+        # if team_obj.captain == value:
+        #     raise serializers.ValidationError(
+        #         _("You cannot remove captain from the team.")
+        #     )
         if (
             self.initial_data.get("action") == "add"
             and team_obj.team_members.count() >= team_obj.tournament.team_size

@@ -8,17 +8,17 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('tournaments', '0004_alter_tournamentmatch_is_contested'),
+        ("tournaments", "0004_alter_tournamentmatch_is_contested"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tournamentmatch',
-            name='round_number',
+            model_name="tournamentmatch",
+            name="round_number",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AlterUniqueTogether(
-            name='tournamentteam',
-            unique_together={('captain', 'tournament')},
+            name="tournamentteam",
+            unique_together={("captain", "tournament")},
         ),
     ]

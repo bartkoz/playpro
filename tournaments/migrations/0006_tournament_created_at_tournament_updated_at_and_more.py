@@ -9,74 +9,88 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournaments', '0005_tournamentmatch_round_number_and_more'),
+        ("tournaments", "0005_tournamentmatch_round_number_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tournament',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=datetime.datetime(2022, 3, 31, 8, 14, 1, 678942, tzinfo=utc)),
+            model_name="tournament",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=datetime.datetime(2022, 3, 31, 8, 14, 1, 678942, tzinfo=utc),
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tournament',
-            name='updated_at',
+            model_name="tournament",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='tournamentgroup',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=datetime.datetime(2022, 3, 31, 8, 14, 6, 573052, tzinfo=utc)),
+            model_name="tournamentgroup",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=datetime.datetime(2022, 3, 31, 8, 14, 6, 573052, tzinfo=utc),
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tournamentgroup',
-            name='updated_at',
+            model_name="tournamentgroup",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='tournamentmatch',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="tournamentmatch",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tournamentmatch',
-            name='updated_at',
+            model_name="tournamentmatch",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='tournamentplatform',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="tournamentplatform",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tournamentplatform',
-            name='updated_at',
+            model_name="tournamentplatform",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='tournamentteam',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="tournamentteam",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tournamentteam',
-            name='updated_at',
+            model_name="tournamentteam",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
         migrations.AddField(
-            model_name='tournamentteammember',
-            name='created_at',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
+            model_name="tournamentteammember",
+            name="created_at",
+            field=models.DateTimeField(
+                auto_now_add=True, default=django.utils.timezone.now
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='tournamentteammember',
-            name='updated_at',
+            model_name="tournamentteammember",
+            name="updated_at",
             field=models.DateTimeField(auto_now=True),
         ),
     ]
