@@ -74,7 +74,7 @@ class TeamViewSet(
             return Response(
                 {"error": "Tournament does not exist."}, status.HTTP_400_BAD_REQUEST
             )
-        obj, _ = TournamentTeam.objects.create(
+        obj = TournamentTeam.objects.create(
             name=serializer.validated_data["name"],
             school=request.user.school,
             tournament=tournament,

@@ -54,7 +54,8 @@ class TeamCreateSerializer(serializers.Serializer):
         ).exists():
             raise serializers.ValidationError(
                 _(
-                    "You may only create one team per tournament. If you wish to create new team you have to leave your current one."
+                    "You may only create one team per tournament. "
+                    "If you wish to create new team you have to leave your current one."
                 )
             )
         return attrs

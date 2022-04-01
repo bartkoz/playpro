@@ -11,7 +11,7 @@ from notifications.signals import invitation_revoked
 from tournaments.models import TournamentTeamMember
 
 
-@receiver(post_save, sender=TournamentTeamMember)
+# @receiver(post_save, sender=TournamentTeamMember)
 def notify_user_about_new_invitation(sender, instance, created, **kwargs):
     if created:
         channel_layer = get_channel_layer()
@@ -46,7 +46,7 @@ def notify_user_about_new_invitation(sender, instance, created, **kwargs):
         )
 
 
-@receiver(invitation_revoked)
+# @receiver(invitation_revoked)
 def notify_user_about_invitation_revoked(instance, **kwargs):
     channel_layer = get_channel_layer()
     message = (
