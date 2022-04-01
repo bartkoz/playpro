@@ -12,9 +12,15 @@ from django.utils.translation import gettext_lazy as _
 
 
 class TournamentListSerializer(serializers.ModelSerializer):
+
+    platforms = serializers.SerializerMethodField()
+
+    def get_platforms(self, obj):
+        return obj.platforms.values_list("name", flat=True)
+
     class Meta:
         model = Tournament
-        fields = ("name", "logo", "pk")
+        fields = ("name", "logo", "pk", "platforms", "team_size")
 
 
 class TournamentDetailSerializer(serializers.ModelSerializer):
