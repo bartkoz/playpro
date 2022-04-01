@@ -9,7 +9,7 @@ from notifications.models import Notification
 from notifications.signals import invitation_revoked, invitation_created
 
 
-@receiver(invitation_created)
+# @receiver(invitation_created)
 def notify_user_about_new_invitation(instance, **kwargs):
     channel_layer = get_channel_layer()
     url = "{}{}".format(
@@ -43,7 +43,7 @@ def notify_user_about_new_invitation(instance, **kwargs):
     )
 
 
-@receiver(invitation_revoked)
+# @receiver(invitation_revoked)
 def notify_user_about_invitation_revoked(instance, **kwargs):
     channel_layer = get_channel_layer()
     message = (
