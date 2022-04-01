@@ -58,9 +58,9 @@ class NotificationConsumer(WebsocketConsumer):
                 "type": "notification",
                 "message": {
                     "url": f"{settings.BASE_URL}"
-                           f"{reverse('tournaments:tournament_invitations-detail', kwargs={'pk': obj.meta['obj_pk']})}",
+                    f"{reverse('tournaments:tournament_invitations-detail', kwargs={'pk': obj.meta['obj_pk']})}",
                     "content": f"You have been invited to the team "
-                               f"{obj.meta['team_name']} in {obj.meta['tournament_name']} tournament.",
+                    f"{obj.meta['team_name']} in {obj.meta['tournament_name']} tournament.",
                     "read": obj.read,
                 },
             }
@@ -70,7 +70,7 @@ class NotificationConsumer(WebsocketConsumer):
                 "message": {
                     "url": "",
                     "message": f"Your invitation to the team {obj.meta['team_name']} "
-                               f"in {obj.meta['tournament_name']} tournament has been revoked.",
+                    f"in {obj.meta['tournament_name']} tournament has been revoked.",
                     "read": obj.read,
                 },
             }

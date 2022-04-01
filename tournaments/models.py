@@ -1,8 +1,14 @@
+import uuid
+
 from django.db import models
 
 from playpro.abstract import TimestampAbstractModel
 from users.models import School, User
 from django.utils.translation import gettext_lazy as _
+
+
+def tournament_upload_path():
+    return f"tournaments/{uuid.uuid4()}"
 
 
 class TournamentPlatform(TimestampAbstractModel, models.Model):
@@ -15,7 +21,7 @@ class Tournament(TimestampAbstractModel, models.Model):
     registration_close_date = models.DateTimeField()
     registration_check_in_date = models.DateTimeField()
     name = models.CharField(max_length=255)
-    logo = models.ImageField()
+    logo = models.ImageField(upload_to=tournament_upload_path())
     platforms = models.ManyToManyField(TournamentPlatform)
     team_size = models.PositiveIntegerField()
 
@@ -74,7 +80,9 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     )
     is_contested = models.BooleanField(default=False)
     is_final = models.BooleanField(default=False)
-    contest_screenshot = models.ImageField(blank=True, null=True)
+    contest_screenshot = models.ImageField(
+        upload_to=tournament_upload_path(), blank=True, null=True
+    )
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
     round_number = models.IntegerField(blank=True, null=True)
 

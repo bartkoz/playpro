@@ -57,7 +57,7 @@ class UserManager(BaseUserManager):
 
 
 class UserAvatar(models.Model):
-    image = models.ImageField()
+    image = models.ImageField(upload_to="avatars/")
 
 
 class User(TimestampAbstractModel, AbstractBaseUser, PermissionsMixin):

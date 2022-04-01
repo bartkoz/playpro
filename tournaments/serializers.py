@@ -48,6 +48,17 @@ class TeamCreateSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=255)
     tournament = serializers.IntegerField()
 
+    def validate(self, attrs):
+        if TournamentTeam.objects.filter(
+            captain=self.context["request"].user, tournament_id=attrs["tournament"]
+        ).exists():
+            raise serializers.ValidationError(
+                _(
+                    "You may only create one team per tournament. If you wish to create new team you have to leave your current one."
+                )
+            )
+        return attrs
+
 
 class TeamUpdateSerializer(serializers.ModelSerializer):
     class Meta:
