@@ -23,7 +23,7 @@ def get_user(scope):
 
 
 def check_match_lobby_eligibility(user, room_channel):
-    if user.pk == TournamentMatch.objects.filter(
+    if user.pk in TournamentMatch.objects.filter(
         chat_channel=room_channel
     ).prefetch_related("contestants__team_members").values_list(
         "contestants__team_members__user__pk", flat=True
