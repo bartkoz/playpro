@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0009_alter_user_notifications_channel'),
+        ("users", "0009_alter_user_notifications_channel"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='notifications_channel',
-            field=models.CharField(default='1UDDADTP6L', max_length=10),
+            model_name="user",
+            name="notifications_channel",
+            field=models.CharField(default="1UDDADTP6L", max_length=10),
         ),
         migrations.AlterField(
-            model_name='useravatar',
-            name='image',
-            field=models.ImageField(upload_to='avatars/'),
+            model_name="useravatar",
+            name="image",
+            field=models.ImageField(upload_to="avatars/"),
         ),
     ]

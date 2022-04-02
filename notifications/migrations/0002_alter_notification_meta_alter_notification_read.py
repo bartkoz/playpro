@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('notifications', '0001_initial'),
+        ("notifications", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='notification',
-            name='meta',
+            model_name="notification",
+            name="meta",
             field=models.JSONField(default=dict),
         ),
         migrations.AlterField(
-            model_name='notification',
-            name='read',
+            model_name="notification",
+            name="read",
             field=models.BooleanField(default=False),
         ),
     ]

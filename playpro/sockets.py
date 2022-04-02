@@ -9,6 +9,7 @@ from urllib.parse import parse_qs
 
 from notifications.enums import NotificationTypes
 from notifications.models import Notification
+from tournaments.models import TournamentMatch
 from users.models import User
 
 
@@ -19,6 +20,16 @@ def get_user(scope):
         return User.objects.get(pk=decoded_data.get("user_id"))
     except User.DoesNotExist:
         return AnonymousUser()
+
+
+def check_match_lobby_eligibility(user, room_channel):
+    if user.pk == TournamentMatch.objects.filter(
+        chat_channel=room_channel
+    ).prefetch_related("contestants__team_members").values_list(
+        "contestants__team_members__user__pk", flat=True
+    ):
+        return True
+    return False
 
 
 class NotificationConsumer(WebsocketConsumer):
@@ -89,12 +100,23 @@ class PreMatchChatConsumer(WebsocketConsumer):
     def connect(self):
         self.user = get_user(self.scope)
         if self.user.is_authenticated:
-            self.channel_group_name = self.user.notifications_channel
-            self.accept()
-            async_to_sync(self.channel_layer.group_add)(
-                self.channel_group_name, self.channel_name
-            )
-            self.send_initial_msg()
+            channel_name = self.scope["path"].split("/")[-2]
+            if check_match_lobby_eligibility(self.user, channel_name):
+                self.channel_group_name = channel_name
+                self.team = (
+                    TournamentMatch.objects.filter(chat_channel=channel_name)
+                    .first()
+                    .contestants.filter(team_members__user=self.user)
+                    .first()
+                    .name
+                )
+                self.accept()
+                async_to_sync(self.channel_layer.group_add)(
+                    self.channel_group_name, self.channel_name
+                )
+
+            else:
+                self.close()
         else:
             self.close()
 
@@ -108,42 +130,16 @@ class PreMatchChatConsumer(WebsocketConsumer):
         message = text_data_json["message"]
 
         async_to_sync(self.channel_layer.group_send)(
-            self.channel_group_name, {"type": "notification", "message": message}
+            self.channel_group_name,
+            {
+                "type": "chat_message",
+                "team": self.team,
+                "username": self.user.nickname,
+                "message": message,
+            },
         )
 
     def notification(self, event):
         message = event["message"]
 
         self.send(text_data=json.dumps({"message": message}))
-
-    def __build_single_notification(self, obj):
-        if obj.meta.get("type") == NotificationTypes.INVITATION.value:
-            msg = {
-                "type": "notification",
-                "message": {
-                    "url": f"{settings.BASE_URL}"
-                    f"{reverse('tournaments:tournament_invitations-detail', kwargs={'pk': obj.meta['obj_pk']})}",
-                    "content": f"You have been invited to the team "
-                    f"{obj.meta['team_name']} in {obj.meta['tournament_name']} tournament.",
-                    "read": obj.read,
-                },
-            }
-        else:
-            msg = {
-                "type": "notification",
-                "message": {
-                    "url": "",
-                    "message": f"Your invitation to the team {obj.meta['team_name']} "
-                    f"in {obj.meta['tournament_name']} tournament has been revoked.",
-                    "read": obj.read,
-                },
-            }
-        return msg
-
-    def send_initial_msg(self):
-        for notification in Notification.objects.filter(user=self.user).only(
-            "meta", "read"
-        ):
-            async_to_sync(self.channel_layer.group_send)(
-                self.channel_group_name, self.__build_single_notification(notification)
-            )

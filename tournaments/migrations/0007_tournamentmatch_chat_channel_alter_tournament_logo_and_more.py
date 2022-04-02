@@ -6,23 +6,29 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournaments', '0006_tournament_created_at_tournament_updated_at_and_more'),
+        ("tournaments", "0006_tournament_created_at_tournament_updated_at_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tournamentmatch',
-            name='chat_channel',
-            field=models.CharField(default='8N2IQETBATSDM0C', max_length=15),
+            model_name="tournamentmatch",
+            name="chat_channel",
+            field=models.CharField(default="8N2IQETBATSDM0C", max_length=15),
         ),
         migrations.AlterField(
-            model_name='tournament',
-            name='logo',
-            field=models.ImageField(upload_to='tournaments/d50e7311-ec6e-4555-9b48-1e5db7108710'),
+            model_name="tournament",
+            name="logo",
+            field=models.ImageField(
+                upload_to="tournaments/d50e7311-ec6e-4555-9b48-1e5db7108710"
+            ),
         ),
         migrations.AlterField(
-            model_name='tournamentmatch',
-            name='contest_screenshot',
-            field=models.ImageField(blank=True, null=True, upload_to='tournament_result/cece74e6-0047-43e2-9768-9fa53df66820'),
+            model_name="tournamentmatch",
+            name="contest_screenshot",
+            field=models.ImageField(
+                blank=True,
+                null=True,
+                upload_to="tournament_result/cece74e6-0047-43e2-9768-9fa53df66820",
+            ),
         ),
     ]

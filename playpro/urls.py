@@ -32,4 +32,5 @@ urlpatterns = [
 
 websocket_urlpatterns = [
     path("notifications/<str:name>/", sockets.NotificationConsumer.as_asgi()),
+    path("match-lobby/<str:name>/", sockets.PreMatchChatConsumer.as_asgi()),
 ]
