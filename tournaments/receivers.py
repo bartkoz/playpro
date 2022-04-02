@@ -11,7 +11,7 @@ def playoff_handler(sender, instance, **kwargs):
     rounds_map = {1: 8,
                   2: 4,
                   3: 2}
-    if instance.tournament.tournament_matches.filter(winner__isnull=False).count() == rounds_map[instance.round_number]:
+    if instance.tournament.tournament_matches.filter(winner__isnull=False).count() == rounds_map.get(instance.round_number):
         winners = []
         for pair in instance.tournament.playoff_array:
             for team in pair:
@@ -21,7 +21,7 @@ def playoff_handler(sender, instance, **kwargs):
         chunks = build_chunks(2, winners)
         for chunk in chunks:
             obj = TournamentMatch.objects.create(
-                tournament=instance.tournament, stage=TournamentMatch.StageChoices.GROUP
+                tournament=instance.tournament, stage=TournamentMatch.StageChoices.PLAYOFF
             )
             for team in chunk:
                 obj.add(team)
