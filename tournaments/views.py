@@ -134,7 +134,9 @@ class TeamViewSet(
                         return Response(status=status.HTTP_204_NO_CONTENT)
                     else:
                         tournament_team.captain = (
-                            tournament_team.team_members.order_by("created_at").first().user
+                            tournament_team.team_members.order_by("created_at")
+                            .first()
+                            .user
                         )
                     tournament_team.save()
         return Response(

@@ -67,3 +67,4 @@ celerybeat-schedule
 *.DS_Store
 
 sphinx/_build
+playpro/production.py

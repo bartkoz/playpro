@@ -2,12 +2,11 @@ from django.db import models
 
 
 class CustomBigIntegerAuto(models.BigAutoField):
-
     def get_internal_type(self):
         return "BigIntegerField"
 
     def db_type(self, connection):
-        db_type_format = 'BIGINT DEFAULT public.next_id()'
+        db_type_format = "BIGINT DEFAULT public.next_id()"
 
         return db_type_format
 

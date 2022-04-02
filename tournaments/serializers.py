@@ -92,7 +92,9 @@ class TeamMemberUpdateSerializer(serializers.ModelSerializer):
                 )
             )
         if value.is_in_team(team_obj):
-            raise serializers.ValidationError(_(f"{value.full_name} is already part of a team in this tournament."))
+            raise serializers.ValidationError(
+                _(f"{value.full_name} is already part of a team in this tournament.")
+            )
         if value.school != self.context["request"].user.school:
             raise serializers.ValidationError(
                 _("You may only invite people from your schoool.")
@@ -149,6 +151,15 @@ class InvitationSerializer(serializers.ModelSerializer):
                 _("Invitation has already been addressed.")
             )
         return obj
+
+    def validate(self, attrs):
+        if self.instance.user.is_in_team(self.instance.team):
+            raise serializers.ValidationError(
+                _(
+                    f"You need to leave your current team in tournament {self.instance.team.tournament.name} to accept this invitation"
+                )
+            )
+        return attrs
 
 
 class TournamentGroupTeamSerializer(serializers.ModelSerializer):
