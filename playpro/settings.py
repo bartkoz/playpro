@@ -157,7 +157,7 @@ STATIC_URL = "/static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+DEFAULT_AUTO_FIELD = "playpro.abstract.CustomBigIntegerAuto"
 EMAIL_RESEND_DELAY = 10
 PLAYPRO_URL = "https://playpro.gg/"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
