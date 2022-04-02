@@ -91,6 +91,8 @@ class TeamMemberUpdateSerializer(serializers.ModelSerializer):
                     f"Team can oan consist of maximum of {team_obj.tournament.team_size} teammates."
                 )
             )
+        if value.is_in_team(team_obj):
+            raise serializers.ValidationError(_(f"{value.full_name} is already part of a team in this tournament."))
         if value.school != self.context["request"].user.school:
             raise serializers.ValidationError(
                 _("You may only invite people from your schoool.")

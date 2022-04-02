@@ -125,6 +125,10 @@ class User(TimestampAbstractModel, AbstractBaseUser, PermissionsMixin):
             self.avatar = UserAvatar.objects.first()
         super().save(*args, **kwargs)
 
+    def is_in_team(self, team):
+        from tournaments.models import TournamentTeamMember
+        return TournamentTeamMember.objects.filter(user=self, team=team, invitation_accepted=True).exists()
+
 
 class School(models.Model):
     name = models.CharField(max_length=255)

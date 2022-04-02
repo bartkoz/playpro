@@ -11,6 +11,10 @@ def tournament_upload_path():
     return f"tournaments/{uuid.uuid4()}"
 
 
+def result_upload_path():
+    return f"tournament_result/{uuid.uuid4()}"
+
+
 class TournamentPlatform(TimestampAbstractModel, models.Model):
 
     name = models.CharField(max_length=255)
@@ -81,7 +85,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     is_contested = models.BooleanField(default=False)
     is_final = models.BooleanField(default=False)
     contest_screenshot = models.ImageField(
-        upload_to=tournament_upload_path(), blank=True, null=True
+        upload_to=result_upload_path(), blank=True, null=True
     )
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
     round_number = models.IntegerField(blank=True, null=True)
