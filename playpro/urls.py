@@ -32,10 +32,10 @@ urlpatterns = [
     ),
     path("users/", include("users.urls")),
     path("tournaments/", include("tournaments.urls")),
+    path('sentry-debug/', trigger_error),
 ]
 
 websocket_urlpatterns = [
     path("notifications/<str:name>/", sockets.NotificationConsumer.as_asgi()),
     path("match-lobby/<str:name>/", sockets.PreMatchChatConsumer.as_asgi()),
-    path('sentry-debug/', trigger_error),
 ]
