@@ -20,9 +20,6 @@ schema_view = get_schema_view(
 )
 
 
-def trigger_error(request):
-    division_by_zero = 1 / 0
-
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
@@ -32,7 +29,6 @@ urlpatterns = [
     ),
     path("users/", include("users.urls")),
     path("tournaments/", include("tournaments.urls")),
-    path('sentry-debug/', trigger_error),
 ]
 
 websocket_urlpatterns = [
