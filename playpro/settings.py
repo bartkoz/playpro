@@ -182,3 +182,9 @@ AWS_DEFAULT_ACL = None
 AWS_S3_HOST = "s3.us-east-1.amazonaws.com"
 AWS_S3_REGION_NAME = "us-east-1"
 AWS_QUERYSTRING_AUTH = False
+
+
+try:
+    from .production import *
+except ImportError:
+    pass

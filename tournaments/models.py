@@ -1,6 +1,8 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
+from shortuuid import ShortUUID
 
 from playpro.abstract import TimestampAbstractModel
 from users.models import School, User
@@ -89,6 +91,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     )
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
     round_number = models.IntegerField(blank=True, null=True)
+    chat_channel = models.CharField(default=ShortUUID(alphabet=settings.NOTIFICATION_CHARSET).random(length=15), max_length=15)
 
     def save(self, *args, **kwargs):
         if self.winner != self.initial_winner and self.initial_winner:
