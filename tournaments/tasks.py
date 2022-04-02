@@ -20,11 +20,6 @@ def build_chunks(chunk_size, data):
     return [data[x : x + chunk_size] for x in range(0, len(data), chunk_size)]
 
 
-def create_nth_playoff_round(round_number):
-    if round_number <= 4:
-        pass
-
-
 def create_tournament_groups_or_ladder():
 
     for tournament in (

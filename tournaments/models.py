@@ -82,7 +82,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         PLAYOFF = "playoff", _("Playoff")
         GROUP = "group", _("Group")
 
-    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
+    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT, related_name='tournament_matches')
     stage = models.CharField(choices=StageChoices.choices, max_length=20)
     match_start = models.DateTimeField()
     winner = models.ForeignKey(
