@@ -19,6 +19,10 @@ schema_view = get_schema_view(
     permission_classes=(permissions.AllowAny,),
 )
 
+
+def trigger_error(request):
+    division_by_zero = 1 / 0
+
 urlpatterns = [
     path("admin/", admin.site.urls),
     path(
@@ -33,4 +37,5 @@ urlpatterns = [
 websocket_urlpatterns = [
     path("notifications/<str:name>/", sockets.NotificationConsumer.as_asgi()),
     path("match-lobby/<str:name>/", sockets.PreMatchChatConsumer.as_asgi()),
+    path('sentry-debug/', trigger_error),
 ]

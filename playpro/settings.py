@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 from datetime import timedelta
 from pathlib import Path
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 import dj_database_url
@@ -157,7 +159,7 @@ STATIC_URL = "/static/"
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
-DEFAULT_AUTO_FIELD = "playpro.abstract.CustomBigIntegerAuto"
+DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 EMAIL_RESEND_DELAY = 10
 PLAYPRO_URL = "https://playpro.gg/"
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
@@ -182,6 +184,14 @@ AWS_DEFAULT_ACL = None
 AWS_S3_HOST = "s3.us-east-1.amazonaws.com"
 AWS_S3_REGION_NAME = "us-east-1"
 AWS_QUERYSTRING_AUTH = False
+
+
+sentry_sdk.init(
+    dsn="https://cafd18efaf774c01bdb173936568948b@o1186735.ingest.sentry.io/6306560",
+    integrations=[DjangoIntegration()],
+    traces_sample_rate=0.05,
+    send_default_pii=True
+)
 
 
 try:
