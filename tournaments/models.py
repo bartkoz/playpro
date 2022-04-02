@@ -1,6 +1,7 @@
 import uuid
 
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from shortuuid import ShortUUID
 
@@ -30,6 +31,7 @@ class Tournament(TimestampAbstractModel, models.Model):
     logo = models.ImageField(upload_to=tournament_upload_path())
     platforms = models.ManyToManyField(TournamentPlatform)
     team_size = models.PositiveIntegerField()
+    playoff_array = ArrayField(ArrayField(models.IntegerField(), size=2), size=8, null=True)
 
 
 class TournamentTeam(TimestampAbstractModel, models.Model):
@@ -65,7 +67,9 @@ class TournamentTeamMember(TimestampAbstractModel, models.Model):
 
 
 class TournamentGroup(TimestampAbstractModel, models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT, related_name='tournament_groups')
+    tournament = models.ForeignKey(
+        Tournament, on_delete=models.PROTECT, related_name="tournament_groups"
+    )
     teams = models.ManyToManyField(TournamentTeam)
 
 

@@ -17,19 +17,28 @@ def get_division_value(team_count):
 
 
 def build_chunks(chunk_size, data):
-    return [data[x: x + chunk_size] for x in range(0, len(data), chunk_size)]
+    return [data[x : x + chunk_size] for x in range(0, len(data), chunk_size)]
+
+
+def create_nth_playoff_round(round_number):
+    if round_number <= 4:
+        pass
 
 
 def create_tournament_groups_or_ladder():
 
-    for tournament in Tournament.objects.annotate(groups_count=Count('tournament_groups')).filter(
-        registration_close_date__lte=timezone.now(), groups_count=0
-    ).values_list("pk", flat=True):
+    for tournament in (
+        Tournament.objects.annotate(groups_count=Count("tournament_groups"))
+        .filter(registration_close_date__lte=timezone.now(), groups_count=0)
+        .values_list("pk", flat=True)
+    ):
         qs = TournamentTeam.objects.filter(tournament_id=tournament)
         randomized_qs = list(qs)
         random.shuffle(randomized_qs)
         if qs.count() <= 16:
             chunks = build_chunks(2, randomized_qs)
+            tournament.playoff_array = chunks
+            tournament.save()
             for chunk in chunks:
                 obj = TournamentMatch.objects.create(
                     tournament=tournament,
