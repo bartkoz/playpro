@@ -190,7 +190,7 @@ sentry_sdk.init(
     dsn="https://cafd18efaf774c01bdb173936568948b@o1186735.ingest.sentry.io/6306560",
     integrations=[DjangoIntegration()],
     traces_sample_rate=0.05,
-    send_default_pii=True
+    send_default_pii=True,
 )
 
 

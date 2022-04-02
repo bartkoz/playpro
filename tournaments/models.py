@@ -65,7 +65,7 @@ class TournamentTeamMember(TimestampAbstractModel, models.Model):
 
 
 class TournamentGroup(TimestampAbstractModel, models.Model):
-    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
+    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT, related_name='tournament_groups')
     teams = models.ManyToManyField(TournamentTeam)
 
 
