@@ -24,7 +24,8 @@ from tournaments.serializers import (
     InvitationSerializer,
     TournamentGroupSerializer,
     TournamentMatchSerializer,
-    TournamentMatchUpdateSerializer, TournamentMatchContestantsSerializer,
+    TournamentMatchUpdateSerializer,
+    TournamentMatchContestantsSerializer,
 )
 from users.models import User
 from users.serializers import UserTeammatesSrializer
@@ -51,7 +52,7 @@ class TeamViewSet(
             return TeamCreateSerializer
         elif self.action in ["update", "partial_update"]:
             return TeamUpdateSerializer
-        elif self.action == 'retrieve':
+        elif self.action == "retrieve":
             return TournamentMatchContestantsSerializer
         elif self.request.method == "POST":
             return TeamMemberUpdateSerializer
@@ -64,7 +65,7 @@ class TeamViewSet(
         return context
 
     def get_queryset(self):
-        if self.action == 'retrieve':
+        if self.action == "retrieve":
             return TournamentTeam.objects.all()
         return TournamentTeam.objects.filter(captain=self.request.user)
 

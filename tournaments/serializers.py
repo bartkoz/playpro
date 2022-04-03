@@ -189,7 +189,7 @@ class TournamentGroupSerializer(serializers.ModelSerializer):
 class TournamentMatchContestantsSerializer(serializers.ModelSerializer):
 
     team_members = TeamMemberSerializer(many=True)
-    tournament = serializers.CharField(source='tournament.name')
+    tournament = serializers.CharField(source="tournament.name")
 
     class Meta:
         model = TournamentTeam

@@ -8,7 +8,8 @@ from users.views import (
     UserPasswordResetLinkGenerateAPIView,
     UserPasswordResetAPIView,
     AvailableAvatarsAPIView,
-    ProfileAPIView, UserTeamsAPIView,
+    ProfileAPIView,
+    UserTeamsAPIView,
 )
 
 app_name = "users"

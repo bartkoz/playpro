@@ -17,7 +17,19 @@ def get_division_value(team_count):
 
 
 def build_chunks(chunk_size, data):
-    return [data[x : x + chunk_size] for x in range(0, len(data), chunk_size)]
+    final_chunks = []
+    remainder = len(data) % chunk_size
+    equal_part = len(data) - remainder
+    chunks_count = int(equal_part / chunk_size + 1)
+    for _ in range(chunks_count):
+        final_chunks.append([])
+    for _ in range(chunks_count):
+        for chunk in final_chunks:
+            try:
+                chunk.append(data.pop(0))
+            except IndexError:
+                break
+    return final_chunks
 
 
 def create_tournament_groups_or_ladder():
@@ -28,7 +40,9 @@ def create_tournament_groups_or_ladder():
         .values_list("pk", flat=True)
     ):
         team_size = tournament.team_size
-        qs = TournamentTeam.objects.annotate(team_size=Count('team_members')).filter(tournament_id=tournament, team_size=team_size)
+        qs = TournamentTeam.objects.annotate(team_size=Count("team_members")).filter(
+            tournament_id=tournament, team_size=team_size
+        )
         randomized_qs = list(qs)
         random.shuffle(randomized_qs)
         if qs.count() <= 16:
