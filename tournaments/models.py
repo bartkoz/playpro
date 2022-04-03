@@ -59,6 +59,10 @@ class TournamentTeam(TimestampAbstractModel, models.Model):
                 user=self.captain, invitation_accepted=True, team=self
             )
 
+    @property
+    def is_complete(self):
+        return self.team_members.count() == self.tournament.team_size
+
 
 class TournamentTeamMember(TimestampAbstractModel, models.Model):
     invitation_accepted = models.BooleanField(null=True)

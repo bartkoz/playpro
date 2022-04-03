@@ -27,7 +27,8 @@ def create_tournament_groups_or_ladder():
         .filter(registration_close_date__lte=timezone.now(), groups_count=0)
         .values_list("pk", flat=True)
     ):
-        qs = TournamentTeam.objects.filter(tournament_id=tournament)
+        team_size = tournament.team_size
+        qs = TournamentTeam.objects.annotate(team_size=Count('team_members')).filter(tournament_id=tournament, team_size=team_size)
         randomized_qs = list(qs)
         random.shuffle(randomized_qs)
         if qs.count() <= 16:
