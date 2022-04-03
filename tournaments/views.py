@@ -62,6 +62,8 @@ class TeamViewSet(
         return context
 
     def get_queryset(self):
+        if self.action == 'retrieve':
+            return TournamentTeam.objects.all()
         return TournamentTeam.objects.filter(captain=self.request.user)
 
     def create(self, request, *args, **kwargs):
