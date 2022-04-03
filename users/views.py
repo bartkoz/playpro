@@ -15,6 +15,8 @@ from rest_framework.generics import RetrieveUpdateAPIView, ListAPIView
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from tournaments.models import TournamentTeam
+from tournaments.serializers import TournamentMatchContestantsSerializer
 from users.models import User, School, UserAvatar
 from users.serializers import (
     UserCreateSerializer,
@@ -209,3 +211,11 @@ class AvailableAvatarsAPIView(ListAPIView):
 
     serializer_class = AvatarSerializer
     queryset = UserAvatar.objects.all()
+
+
+class UserTeamsAPIView(ListAPIView):
+
+    serializer_class = TournamentMatchContestantsSerializer
+
+    def get_queryset(self):
+        return TournamentTeam.objects.filter(team_members=self.request.user)
