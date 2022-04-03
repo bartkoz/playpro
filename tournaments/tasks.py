@@ -19,16 +19,19 @@ def get_division_value(team_count):
 def build_chunks(chunk_size, data):
     final_chunks = []
     remainder = len(data) % chunk_size
-    equal_part = len(data) - remainder
-    chunks_count = int(equal_part / chunk_size + 1)
-    for _ in range(chunks_count):
-        final_chunks.append([])
-    for _ in range(chunks_count):
-        for chunk in final_chunks:
-            try:
-                chunk.append(data.pop(0))
-            except IndexError:
-                break
+    if remainder:
+        equal_part = len(data) - remainder
+        chunks_count = int(equal_part / chunk_size + 1)
+        for _ in range(chunks_count):
+            final_chunks.append([])
+        for _ in range(chunks_count):
+            for chunk in final_chunks:
+                try:
+                    chunk.append(data.pop(0))
+                except IndexError:
+                    break
+    else:
+        final_chunks = [data[x: x + chunk_size] for x in range(0, len(data), chunk_size)]
     return final_chunks
 
 
