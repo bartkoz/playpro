@@ -64,7 +64,7 @@ class TeamCreateSerializer(serializers.Serializer):
 class TeamUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentTeam
-        fields = ("name",)
+        fields = ("name", "pk")
 
 
 class TeamMemberUpdateSerializer(serializers.ModelSerializer):
