@@ -31,7 +31,9 @@ class Tournament(TimestampAbstractModel, models.Model):
     logo = models.ImageField(upload_to=tournament_upload_path())
     platforms = models.ManyToManyField(TournamentPlatform)
     team_size = models.PositiveIntegerField()
-    playoff_array = ArrayField(ArrayField(models.IntegerField(), size=2), size=8, null=True)
+    playoff_array = ArrayField(
+        ArrayField(models.IntegerField(), size=2), size=8, null=True
+    )
 
 
 class TournamentTeam(TimestampAbstractModel, models.Model):
@@ -82,7 +84,9 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         PLAYOFF = "playoff", _("Playoff")
         GROUP = "group", _("Group")
 
-    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT, related_name='tournament_matches')
+    tournament = models.ForeignKey(
+        Tournament, on_delete=models.PROTECT, related_name="tournament_matches"
+    )
     stage = models.CharField(choices=StageChoices.choices, max_length=20)
     match_start = models.DateTimeField()
     winner = models.ForeignKey(

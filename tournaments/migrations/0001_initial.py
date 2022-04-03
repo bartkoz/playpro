@@ -12,109 +12,244 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('users', '0002_alter_user_notifications_channel'),
+        ("users", "0002_alter_user_notifications_channel"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Tournament',
+            name="Tournament",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('registration_open_date', models.DateTimeField()),
-                ('registration_close_date', models.DateTimeField()),
-                ('registration_check_in_date', models.DateTimeField()),
-                ('name', models.CharField(max_length=255)),
-                ('logo', models.ImageField(upload_to='tournaments/76c99990-51cf-47a3-a70a-972fd0e8a52e')),
-                ('team_size', models.PositiveIntegerField()),
-                ('playoff_array', django.contrib.postgres.fields.ArrayField(base_field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(), size=2), null=True, size=8)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("registration_open_date", models.DateTimeField()),
+                ("registration_close_date", models.DateTimeField()),
+                ("registration_check_in_date", models.DateTimeField()),
+                ("name", models.CharField(max_length=255)),
+                (
+                    "logo",
+                    models.ImageField(
+                        upload_to="tournaments/76c99990-51cf-47a3-a70a-972fd0e8a52e"
+                    ),
+                ),
+                ("team_size", models.PositiveIntegerField()),
+                (
+                    "playoff_array",
+                    django.contrib.postgres.fields.ArrayField(
+                        base_field=django.contrib.postgres.fields.ArrayField(
+                            base_field=models.IntegerField(), size=2
+                        ),
+                        null=True,
+                        size=8,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='TournamentPlatform',
+            name="TournamentPlatform",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=255)),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='TournamentTeam',
+            name="TournamentTeam",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('name', models.CharField(max_length=255)),
-                ('group_score', models.IntegerField(default=0)),
-                ('wins', models.IntegerField(default=0)),
-                ('losses', models.IntegerField(default=0)),
-                ('captain', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
-                ('school', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='users.school')),
-                ('tournament', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to='tournaments.tournament')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("name", models.CharField(max_length=255)),
+                ("group_score", models.IntegerField(default=0)),
+                ("wins", models.IntegerField(default=0)),
+                ("losses", models.IntegerField(default=0)),
+                (
+                    "captain",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "school",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT, to="users.school"
+                    ),
+                ),
+                (
+                    "tournament",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="tournaments.tournament",
+                    ),
+                ),
             ],
             options={
-                'unique_together': {('captain', 'tournament')},
+                "unique_together": {("captain", "tournament")},
             },
         ),
         migrations.CreateModel(
-            name='TournamentTeamMember',
+            name="TournamentTeamMember",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('invitation_accepted', models.BooleanField(null=True)),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='team_members', to='tournaments.tournamentteam')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to=settings.AUTH_USER_MODEL)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("invitation_accepted", models.BooleanField(null=True)),
+                (
+                    "team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="team_members",
+                        to="tournaments.tournamentteam",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='TournamentMatch',
+            name="TournamentMatch",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('stage', models.CharField(choices=[('playoff', 'Playoff'), ('group', 'Group')], max_length=20)),
-                ('match_start', models.DateTimeField()),
-                ('is_contested', models.BooleanField(default=False)),
-                ('is_final', models.BooleanField(default=False)),
-                ('contest_screenshot', models.ImageField(blank=True, null=True, upload_to='tournament_result/dddf2a64-2a8c-4e9f-b469-861eef1e9335')),
-                ('round_number', models.IntegerField(blank=True, null=True)),
-                ('chat_channel', models.CharField(default='14F7F2ZOPKTQRMC', max_length=15)),
-                ('contestants', models.ManyToManyField(related_name='matches', to='tournaments.tournamentteam')),
-                ('tournament', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='tournament_matches', to='tournaments.tournament')),
-                ('winner', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, to='tournaments.tournamentteam')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                (
+                    "stage",
+                    models.CharField(
+                        choices=[("playoff", "Playoff"), ("group", "Group")],
+                        max_length=20,
+                    ),
+                ),
+                ("match_start", models.DateTimeField()),
+                ("is_contested", models.BooleanField(default=False)),
+                ("is_final", models.BooleanField(default=False)),
+                (
+                    "contest_screenshot",
+                    models.ImageField(
+                        blank=True,
+                        null=True,
+                        upload_to="tournament_result/dddf2a64-2a8c-4e9f-b469-861eef1e9335",
+                    ),
+                ),
+                ("round_number", models.IntegerField(blank=True, null=True)),
+                (
+                    "chat_channel",
+                    models.CharField(default="14F7F2ZOPKTQRMC", max_length=15),
+                ),
+                (
+                    "contestants",
+                    models.ManyToManyField(
+                        related_name="matches", to="tournaments.tournamentteam"
+                    ),
+                ),
+                (
+                    "tournament",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="tournament_matches",
+                        to="tournaments.tournament",
+                    ),
+                ),
+                (
+                    "winner",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        to="tournaments.tournamentteam",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.CreateModel(
-            name='TournamentGroup',
+            name="TournamentGroup",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('teams', models.ManyToManyField(to='tournaments.tournamentteam')),
-                ('tournament', models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, related_name='tournament_groups', to='tournaments.tournament')),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_at", models.DateTimeField(auto_now_add=True)),
+                ("updated_at", models.DateTimeField(auto_now=True)),
+                ("teams", models.ManyToManyField(to="tournaments.tournamentteam")),
+                (
+                    "tournament",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="tournament_groups",
+                        to="tournaments.tournament",
+                    ),
+                ),
             ],
             options={
-                'abstract': False,
+                "abstract": False,
             },
         ),
         migrations.AddField(
-            model_name='tournament',
-            name='platforms',
-            field=models.ManyToManyField(to='tournaments.tournamentplatform'),
+            model_name="tournament",
+            name="platforms",
+            field=models.ManyToManyField(to="tournaments.tournamentplatform"),
         ),
     ]
