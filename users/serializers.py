@@ -117,7 +117,7 @@ class UserTeammatesSrializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ("pk", "avatar", "nickname", "first_name", "last_name")
+        fields = ("id", "avatar", "nickname", "first_name", "last_name")
 
 
 class SchoolSerializer(serializers.ModelSerializer):

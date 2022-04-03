@@ -20,7 +20,7 @@ class TournamentListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Tournament
-        fields = ("name", "logo", "pk", "platforms", "team_size")
+        fields = ("name", "logo", "id", "platforms", "team_size")
 
 
 class TournamentDetailSerializer(serializers.ModelSerializer):
@@ -109,12 +109,12 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     is_captain = serializers.SerializerMethodField()
     avatar = serializers.URLField(source="user.avatar.image.url", read_only=True)
     invitation_accepted = serializers.SerializerMethodField()
-    user_pk = serializers.IntegerField(source="user.pk", read_only=True)
+    user_id = serializers.IntegerField(source="user.pk", read_only=True)
 
     class Meta:
         model = TournamentTeamMember
         fields = (
-            "user_pk",
+            "user_id",
             "full_name",
             "email",
             "is_captain",
