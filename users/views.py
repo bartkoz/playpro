@@ -218,4 +218,4 @@ class UserTeamsAPIView(ListAPIView):
     serializer_class = TournamentMatchContestantsSerializer
 
     def get_queryset(self):
-        return TournamentTeam.objects.filter(team_members=self.request.user)
+        return TournamentTeam.objects.filter(team_members__user=self.request.user)
