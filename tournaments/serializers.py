@@ -193,7 +193,7 @@ class TournamentMatchContestantsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TournamentTeam
-        fields = ("name", "team_members", "tournament")
+        fields = ("name", "team_members", "tournament", "id")
 
 
 class TournamentMatchSerializer(serializers.ModelSerializer):
