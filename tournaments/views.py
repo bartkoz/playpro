@@ -41,6 +41,7 @@ class TournamentBaseViewSet(ReadOnlyModelViewSet):
 
 class TeamViewSet(
     mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
     mixins.DestroyModelMixin,
     mixins.UpdateModelMixin,
     GenericViewSet,
