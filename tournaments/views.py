@@ -105,7 +105,7 @@ class TeamViewSet(
             }
         )
 
-    @action(methods=("post", "delete", "get"), detail=True)
+    @action(methods=("post", "get"), detail=True)
     def manage_team(self, request, *args, **kwargs):
         tournament_team = get_object_or_404(TournamentTeam, pk=kwargs["pk"])
         if request.method == "POST":
