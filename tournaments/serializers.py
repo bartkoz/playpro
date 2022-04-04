@@ -88,10 +88,10 @@ class TeamMemberUpdateSerializer(serializers.ModelSerializer):
         ):
             raise serializers.ValidationError(
                 _(
-                    f"Team can oan consist of maximum of {team_obj.tournament.team_size} teammates."
+                    f"Team can consist of maximum of {team_obj.tournament.team_size} teammates."
                 )
             )
-        if value.is_in_team(team_obj):
+        if value.is_in_team(team_obj) and self.initial_data.get("action") == "add":
             raise serializers.ValidationError(
                 _(f"{value.full_name} is already part of a team in this tournament.")
             )
