@@ -4,7 +4,7 @@ from channels.auth import AuthMiddlewareStack
 from channels.http import AsgiHandler
 from channels.routing import ProtocolTypeRouter, URLRouter
 
-from playpro import urls
+import urls
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "playpro.settings")
 
