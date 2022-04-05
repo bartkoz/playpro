@@ -1,14 +1,15 @@
 import os
 import django
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "playpro.production")
+
+django.setup()
+
 from channels.auth import AuthMiddlewareStack
 from channels.http import AsgiHandler
 from channels.routing import ProtocolTypeRouter, URLRouter
 
 import urls
-
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "playpro.settings")
-
-django.setup()
 
 application = ProtocolTypeRouter(
     {
