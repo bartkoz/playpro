@@ -14,7 +14,7 @@ class PasswordCharacterValidator:
         min_length_special=1,
         min_length_lower=1,
         min_length_upper=1,
-        special_characters="~!@#$%^&*()_+{}\":;'[]",
+        special_characters="~!@#$%^&*()_+{}\".:;'[]",
     ):
         self.min_length_digit = min_length_digit
         self.min_length_alpha = min_length_alpha
