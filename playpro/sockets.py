@@ -3,7 +3,7 @@ from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth.models import AnonymousUser
 from django.urls import reverse
-from jwt import decode as jwt_decode
+from jwt import decode as jwt_decode, ExpiredSignatureError
 from django.conf import settings
 from urllib.parse import parse_qs
 
@@ -18,7 +18,7 @@ def get_user(scope):
         token = parse_qs(scope["query_string"].decode("utf8")).get("token")[0]
         decoded_data = jwt_decode(token, settings.SECRET_KEY, algorithms=["HS256"])
         return User.objects.get(pk=decoded_data.get("user_id"))
-    except User.DoesNotExist:
+    except (User.DoesNotExist, ExpiredSignatureError):
         return AnonymousUser()
 
 
