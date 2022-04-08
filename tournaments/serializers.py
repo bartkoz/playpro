@@ -139,7 +139,7 @@ class InvitationSerializer(serializers.ModelSerializer):
     platforms = serializers.SerializerMethodField()
     team = serializers.CharField(source="team.name", read_only=True)
     captain = serializers.CharField(source="team.captain.nickname", read_only=True)
-    # invitation_accepted = serializers.SerializerMethodField()
+    # invitation_status = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentTeamMember
@@ -150,10 +150,11 @@ class InvitationSerializer(serializers.ModelSerializer):
             "invitation_accepted",
             "id",
             "team",
-            "captain"
+            "captain",
+            # "invitation_status"
         )
 
-    # def get_invitation_accepted(self, obj):
+    # def invitation_status(self, obj):
     #     mapping = {None: "pending", False: "rejected", True: "accepted"}
     #     return mapping[obj.invitation_accepted]
 
