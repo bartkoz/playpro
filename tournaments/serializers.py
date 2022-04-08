@@ -148,6 +148,8 @@ class InvitationSerializer(serializers.ModelSerializer):
             "platforms",
             "invitation_accepted",
             "id",
+            "team",
+            "captain"
         )
 
     def get_platforms(self, obj):
