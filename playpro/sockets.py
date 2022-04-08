@@ -102,10 +102,9 @@ class PreMatchChatConsumer(WebsocketConsumer):
         if self.user.is_authenticated:
             channel_name = self.scope["path"].split("/")[-2]
             if check_match_lobby_eligibility(self.user, channel_name):
-                team = (
-                    TournamentMatch.objects.filter(chat_channel=channel_name, contestants__team_members__user=self.user)
-                    .first()
-                )
+                team = TournamentMatch.objects.filter(
+                    chat_channel=channel_name, contestants__team_members__user=self.user
+                ).first()
                 self.channel_group_name = channel_name
                 if team:
                     self.team = team.name

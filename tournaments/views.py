@@ -161,7 +161,9 @@ class InvitationViewSet(
     serializer_class = InvitationSerializer
 
     def get_queryset(self):
-        return TournamentTeamMember.objects.filter(user=self.request.user, invitation_accepted__isnull=True)
+        return TournamentTeamMember.objects.filter(
+            user=self.request.user, invitation_accepted__isnull=True
+        )
 
 
 class RankingAPIView(APIView):

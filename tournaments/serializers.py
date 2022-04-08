@@ -137,10 +137,18 @@ class InvitationSerializer(serializers.ModelSerializer):
         source="team.tournament.team_size", read_only=True
     )
     platforms = serializers.SerializerMethodField()
+    team = serializers.SerializerMethodField(source="team.name", read_only=True)
+    captain = serializers.SerializerMethodField(source="team.captain.nickname")
 
     class Meta:
         model = TournamentTeamMember
-        fields = ("tournament", "number_of_players", "platforms", "invitation_accepted")
+        fields = (
+            "tournament",
+            "number_of_players",
+            "platforms",
+            "invitation_accepted",
+            "id",
+        )
 
     def get_platforms(self, obj):
         return obj.team.tournament.platforms.values_list("name", flat=True)

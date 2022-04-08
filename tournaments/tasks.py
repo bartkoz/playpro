@@ -31,7 +31,9 @@ def build_chunks(chunk_size, data):
                 except IndexError:
                     break
     else:
-        final_chunks = [data[x: x + chunk_size] for x in range(0, len(data), chunk_size)]
+        final_chunks = [
+            data[x : x + chunk_size] for x in range(0, len(data), chunk_size)
+        ]
     return final_chunks
 
 
