@@ -137,8 +137,8 @@ class InvitationSerializer(serializers.ModelSerializer):
         source="team.tournament.team_size", read_only=True
     )
     platforms = serializers.SerializerMethodField()
-    team = serializers.SerializerMethodField(source="team.name", read_only=True)
-    captain = serializers.SerializerMethodField(source="team.captain.nickname")
+    team = serializers.CharField(source="team.name", read_only=True)
+    captain = serializers.CharField(source="team.captain.nickname", read_only=True)
 
     class Meta:
         model = TournamentTeamMember
