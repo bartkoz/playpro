@@ -67,7 +67,7 @@ class TeamViewSet(
     def get_queryset(self):
         if self.action == "retrieve":
             return TournamentTeam.objects.all()
-        return TournamentTeam.objects.filter(captain=self.request.user)
+        return TournamentTeam.objects.filter(team_members__user=self.request.user)
 
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
