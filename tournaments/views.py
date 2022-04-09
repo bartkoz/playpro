@@ -144,7 +144,7 @@ class TeamViewSet(
                             .user
                         )
                     tournament_team.save()
-                return Response(status=status.HTTP_204_NO_CONTENT)
+                return Response(status=status.HTTP_204_NO_CONTENT, data={"status": "ok"})
         return Response(
             TeamMemberSerializer(
                 tournament_team.team_members.order_by("created_at"),
