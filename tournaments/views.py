@@ -1,3 +1,6 @@
+import copy
+
+from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -137,6 +140,7 @@ class TeamViewSet(
                 if self._check_if_captain(tournament_team, request.user):
                     if tournament_team.team_members.count() == 0:
                         tournament_team.delete()
+                        return Response(status=status.HTTP_204_NO_CONTENT)
                     else:
                         tournament_team.captain = (
                             tournament_team.team_members.order_by("created_at")
@@ -144,12 +148,11 @@ class TeamViewSet(
                             .user
                         )
                     tournament_team.save()
-                return Response(status=status.HTTP_200_OK, data={"status": "ok"})
         return Response(
             TeamMemberSerializer(
                 tournament_team.team_members.order_by("created_at"),
                 many=True,
-                context=self.get_serializer_context(),
+                # context=self.get_serializer_context(),
             ).data
         )
 
