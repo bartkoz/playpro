@@ -161,12 +161,12 @@ class InvitationSerializer(serializers.ModelSerializer):
     def get_platforms(self, obj):
         return obj.team.tournament.platforms.values_list("name", flat=True)
 
-    def validate_invitation_accepted(self, obj):
-        if self.instance.invitation_accepted is not None:
-            raise serializers.ValidationError(
-                _("Invitation has already been addressed.")
-            )
-        return obj
+    # def validate_invitation_accepted(self, obj):
+    #     if self.instance.invitation_accepted is not None:
+    #         raise serializers.ValidationError(
+    #             _("Invitation has already been addressed.")
+    #         )
+    #     return obj
 
     def validate(self, attrs):
         if self.instance.user.is_in_team(self.instance.team):

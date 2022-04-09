@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet, ModelViewSet
 
+from notifications.receivers import notify_captain_invitation_denied
 from notifications.signals import invitation_revoked, invitation_created
 from tournaments.models import (
     Tournament,
@@ -140,7 +141,9 @@ class TeamViewSet(
                 if self._check_if_captain(tournament_team, request.user):
                     if tournament_team.team_members.count() == 0:
                         tournament_team.delete()
-                        return Response(status=status.HTTP_200_OK, data={"status": "ok"})
+                        return Response(
+                            status=status.HTTP_200_OK, data={"status": "ok"}
+                        )
                     else:
                         tournament_team.captain = (
                             tournament_team.team_members.order_by("created_at")
@@ -167,6 +170,18 @@ class InvitationViewSet(
         return TournamentTeamMember.objects.filter(
             user=self.request.user, invitation_accepted__isnull=True
         )
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        # can be moved to avoid pointless update
+        if instance.invitation_accepted == False:
+            notify_captain_invitation_denied(instance)
+            instance.delete()
+        return Response(status=status.HTTP_200_OK, data={"status": "ok"})
 
 
 class RankingAPIView(APIView):

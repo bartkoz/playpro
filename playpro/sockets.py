@@ -75,6 +75,18 @@ class NotificationConsumer(WebsocketConsumer):
                     "read": obj.read,
                 },
             }
+        elif obj.meta.get("type") == NotificationTypes.INVITATION_REVOKE.value:
+            msg = {
+                "type": "notification",
+                "message": {
+                    "url": "",
+                    "message": "{} has denied your invitation to team {} in tournament {}".format(
+                        obj.meta["invited_user"],
+                        obj.meta["team_name"],
+                        obj.meta["tournament_name"],
+                    ),
+                },
+            }
         else:
             msg = {
                 "type": "notification",
