@@ -132,7 +132,7 @@ class TeamViewSet(
                     TournamentTeamMember, team=tournament_team, user=user
                 )
                 if obj.user != request.user:
-                    invitation_revoked.send(instance=obj)
+                    invitation_revoked.send(instance=obj, sender=None)
                 obj.delete()
                 if self._check_if_captain(tournament_team, request.user):
                     if tournament_team.team_members.count() == 0:
