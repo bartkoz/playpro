@@ -137,7 +137,6 @@ class TeamViewSet(
                 if self._check_if_captain(tournament_team, request.user):
                     if tournament_team.team_members.count() == 0:
                         tournament_team.delete()
-                        return Response(status=status.HTTP_204_NO_CONTENT)
                     else:
                         tournament_team.captain = (
                             tournament_team.team_members.order_by("created_at")
@@ -145,6 +144,7 @@ class TeamViewSet(
                             .user
                         )
                     tournament_team.save()
+                return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
             TeamMemberSerializer(
                 tournament_team.team_members.order_by("created_at"),
