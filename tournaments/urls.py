@@ -1,9 +1,6 @@
 from django.urls import path, include
 from rest_framework import routers
 
-
-app_name = "tournaments"
-
 from tournaments.views import (
     TournamentBaseViewSet,
     TeamViewSet,
@@ -11,6 +8,8 @@ from tournaments.views import (
     TournamentMatchViewSet,
     TournamentRankingsViewSet,
 )
+
+app_name = "tournaments"
 
 team_viewset = routers.SimpleRouter()
 team_viewset.register(r"team", TeamViewSet, basename="tournament_teams")

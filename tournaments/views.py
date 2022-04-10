@@ -217,7 +217,7 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
     @action(methods=("get",), detail=True)
     def playoff(self, request, *args, **kwargs):
         return Response(
-            TournamentMatchContestantsSerializer(
+            TournamentMatchSerializer(
                 self.get_object().tournament_matches.filter(
                     stage=TournamentMatch.StageChoices.PLAYOFF
                 ),
