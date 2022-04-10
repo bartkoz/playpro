@@ -45,6 +45,7 @@ class TournamentTeam(TimestampAbstractModel, models.Model):
     group_score = models.IntegerField(default=0)
     wins = models.IntegerField(default=0)
     losses = models.IntegerField(default=0)
+    # tournament_joined = models.BooleanField(default=False)
 
     class Meta:
         unique_together = ("captain", "tournament")

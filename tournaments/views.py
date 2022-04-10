@@ -184,16 +184,6 @@ class InvitationViewSet(
         return Response(status=status.HTTP_200_OK, data={"status": "ok"})
 
 
-class RankingAPIView(APIView):
-    def get(self, request, *args, **kwargs):
-        return Response(
-            TournamentGroupSerializer(
-                TournamentGroup.objects.filter(teams__team_members__user=request.user),
-                many=True,
-            ).data
-        )
-
-
 class TournamentMatchViewSet(
     GenericViewSet,
     mixins.ListModelMixin,
@@ -208,4 +198,29 @@ class TournamentMatchViewSet(
     def get_queryset(self):
         return TournamentMatch.objects.filter(
             contestants__team_members__user=self.request.user
+        )
+
+
+class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
+
+    queryset = Tournament.objects.all()
+    serializer_class = TournamentListSerializer
+
+    @action(methods=("get",), detail=True)
+    def groups(self, request, *args, **kwargs):
+        return Response(
+            TournamentGroupSerializer(
+                self.get_object().tournament_groups, many=True
+            ).data
+        )
+
+    @action(methods=("get",), detail=True)
+    def playoff(self, request, *args, **kwargs):
+        return Response(
+            TournamentMatchContestantsSerializer(
+                self.get_object().tournament_matches.filter(
+                    stage=TournamentMatch.StageChoices.PLAYOFF
+                ),
+                many=True,
+            ).data
         )

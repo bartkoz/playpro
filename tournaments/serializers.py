@@ -66,6 +66,9 @@ class TeamUpdateSerializer(serializers.ModelSerializer):
         model = TournamentTeam
         fields = ("name", "pk")
 
+    # def validate_tournament_joined(self, value):
+    #     pass
+
 
 class TeamMemberUpdateSerializer(serializers.ModelSerializer):
 
@@ -206,10 +209,11 @@ class TournamentMatchContestantsSerializer(serializers.ModelSerializer):
 
     team_members = TeamMemberSerializer(many=True)
     tournament = serializers.CharField(source="tournament.name")
+    school = serializers.CharField(source="captain.school.name")
 
     class Meta:
         model = TournamentTeam
-        fields = ("name", "team_members", "tournament", "id")
+        fields = ("name", "team_members", "tournament", "id", "school")
 
 
 class TournamentMatchSerializer(serializers.ModelSerializer):
