@@ -192,7 +192,7 @@ sentry_sdk.init(
     traces_sample_rate=0.05,
     send_default_pii=True,
 )
-
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/0'
 
 try:
     from .production import *
