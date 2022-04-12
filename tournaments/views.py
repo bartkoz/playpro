@@ -232,4 +232,4 @@ class ScheduleAPIView(ListAPIView):
         return TournamentMatch.objects.filter(
             contestants__team_members__user__school=self.request.user.school,
             match_start__gte=datetime.utcnow(),
-        ).distinct()
+        ).order_by("match_start").distinct()
