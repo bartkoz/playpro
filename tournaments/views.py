@@ -1,5 +1,6 @@
 import copy
 
+from celery.utils.time import timezone
 from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status
@@ -233,5 +234,6 @@ class ScheduleAPIView(ListAPIView):
 
     def get_queryset(self):
         return TournamentMatch.objects.filter(
-            contestants__team_members__user__school=self.request.user.school
-        )
+            contestants__team_members__user__school=self.request.user.school,
+            match_start__gte=timezone.now(),
+        ).distinct()
