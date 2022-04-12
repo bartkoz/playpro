@@ -4,6 +4,7 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status
 from rest_framework.decorators import action
+from rest_framework.generics import ListAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -218,9 +219,19 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
     def playoff(self, request, *args, **kwargs):
         return Response(
             TournamentMatchSerializer(
-                self.get_object().tournament_matches.filter(
-                    stage=TournamentMatch.StageChoices.PLAYOFF
-                ),
+                self.get_object()
+                .tournament_matches.filter(stage=TournamentMatch.StageChoices.PLAYOFF)
+                .order_by("round_number"),
                 many=True,
             ).data
+        )
+
+
+class ScheduleAPIView(ListAPIView):
+
+    serializer_class = TournamentMatchSerializer
+
+    def get_queryset(self):
+        return TournamentMatch.objects.filter(
+            contestants__team_members__user__school=self.request.user.school
         )

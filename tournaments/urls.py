@@ -7,6 +7,7 @@ from tournaments.views import (
     InvitationViewSet,
     TournamentMatchViewSet,
     TournamentRankingsViewSet,
+    ScheduleAPIView,
 )
 
 app_name = "tournaments"
@@ -34,6 +35,7 @@ tournament_rankings_viewset.register(
 
 
 urlpatterns = [
+    path("schedule/", ScheduleAPIView.as_view()),
     path(
         "",
         include(
