@@ -1,15 +1,12 @@
-import copy
+from datetime import datetime
 
-from celery.utils.time import timezone
-from django.http import Http404
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet, ModelViewSet
+from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 
 from notifications.receivers import notify_captain_invitation_denied
 from notifications.signals import invitation_revoked, invitation_created
@@ -17,7 +14,6 @@ from tournaments.models import (
     Tournament,
     TournamentTeam,
     TournamentTeamMember,
-    TournamentGroup,
     TournamentMatch,
 )
 from tournaments.serializers import (
@@ -235,5 +231,5 @@ class ScheduleAPIView(ListAPIView):
     def get_queryset(self):
         return TournamentMatch.objects.filter(
             contestants__team_members__user__school=self.request.user.school,
-            match_start__gte=timezone.now(),
+            match_start__gte=datetime.utcnow(),
         ).distinct()
