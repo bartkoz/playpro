@@ -210,10 +210,11 @@ class TournamentMatchContestantsSerializer(serializers.ModelSerializer):
     team_members = TeamMemberSerializer(many=True)
     tournament = serializers.CharField(source="tournament.name")
     school = serializers.CharField(source="captain.school.name")
+    max_team_members = serializers.CharField(source="tournament.team_size")
 
     class Meta:
         model = TournamentTeam
-        fields = ("name", "team_members", "tournament", "id", "school")
+        fields = ("name", "team_members", "tournament", "id", "school", "max_team_members")
 
 
 class TournamentMatchSerializer(serializers.ModelSerializer):
