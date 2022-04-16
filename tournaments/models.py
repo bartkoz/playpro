@@ -3,6 +3,7 @@ import uuid
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import F
 from shortuuid import ShortUUID
 
 from playpro.abstract import TimestampAbstractModel
@@ -109,9 +110,17 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         max_length=15,
     )
 
+    def _update_teams_score(self):
+        self.winner.wins += 1
+        self.winner.save()
+        loser = [x for x in self.contestants.all() if x is not self.winner][0]
+        loser.losses += 1
+        loser.save()
+
     def save(self, *args, **kwargs):
         if self.winner != self.initial_winner and self.initial_winner:
             self.is_contested = True
-        elif self.winner == self.initial_winner and self.initial_winner:
+        elif self.winner == self.initial_winner and self.initial_winner and not self.is_final:
             self.is_final = True
+
         super().save(*args, **kwargs)
