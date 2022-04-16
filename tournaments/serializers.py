@@ -64,10 +64,14 @@ class TeamCreateSerializer(serializers.Serializer):
 class TeamUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentTeam
-        fields = ("name", "pk")
+        fields = ("name", "pk", "tournament_joined")
 
-    # def validate_tournament_joined(self, value):
-    #     pass
+    def validate_tournament_joined(self, value):
+        if self.context['obj'].tournament_joined:
+            raise serializers.ValidationError(_("Already joined."))
+        if not self.context['obj'].captain == self.context['request'].user:
+            raise serializers.ValidationError(_("Only captain can join tournaments with team."))
+        return value
 
 
 class TeamMemberUpdateSerializer(serializers.ModelSerializer):
