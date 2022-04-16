@@ -67,7 +67,7 @@ class TeamUpdateSerializer(serializers.ModelSerializer):
         fields = ("name", "pk", "tournament_joined")
 
     def validate_tournament_joined(self, value):
-        if not self.context['obj'].tournament.team_size == self.context['obj'].team_members.count():
+        if not self.context['obj'].tournament.team_size == self.context['obj'].team_members.filter(invitation_accepted=True).count():
             raise serializers.ValidationError(_("Team must be full to join a tournament."))
         if self.context['obj'].tournament_joined:
             raise serializers.ValidationError(_("Already joined."))
