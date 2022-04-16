@@ -122,5 +122,6 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
             self.is_contested = True
         elif self.winner == self.initial_winner and self.initial_winner and not self.is_final:
             self.is_final = True
+            self._update_teams_score()
 
         super().save(*args, **kwargs)
