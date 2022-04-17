@@ -232,7 +232,7 @@ class ScheduleAPIView(ListAPIView):
     def get_queryset(self):
         return (
             TournamentMatch.objects.filter(
-                contestants__team_members__user__school=self.request.user.school,
+                contestants__team_members__user=self.request.user,
                 match_start__gte=datetime.utcnow(),
             )
             .order_by("match_start")
