@@ -67,12 +67,19 @@ class TeamUpdateSerializer(serializers.ModelSerializer):
         fields = ("name", "pk", "tournament_joined")
 
     def validate_tournament_joined(self, value):
-        if not self.context['obj'].tournament.team_size == self.context['obj'].team_members.filter(invitation_accepted=True).count():
-            raise serializers.ValidationError(_("Team must be full to join a tournament."))
-        if self.context['obj'].tournament_joined:
+        if (
+            not self.context["obj"].tournament.team_size
+            == self.context["obj"].team_members.filter(invitation_accepted=True).count()
+        ):
+            raise serializers.ValidationError(
+                _("Team must be full to join a tournament.")
+            )
+        if self.context["obj"].tournament_joined:
             raise serializers.ValidationError(_("Already joined."))
-        if not self.context['obj'].captain == self.context['request'].user:
-            raise serializers.ValidationError(_("Only captain can join tournaments with team."))
+        if not self.context["obj"].captain == self.context["request"].user:
+            raise serializers.ValidationError(
+                _("Only captain can join tournaments with team.")
+            )
         return value
 
 
@@ -220,7 +227,14 @@ class TournamentMatchContestantsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TournamentTeam
-        fields = ("name", "team_members", "tournament", "id", "school", "max_team_members")
+        fields = (
+            "name",
+            "team_members",
+            "tournament",
+            "id",
+            "school",
+            "max_team_members",
+        )
 
 
 class TournamentMatchSerializer(serializers.ModelSerializer):
@@ -245,6 +259,20 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
             )
         else:
             return "pending"
+
+
+class TournamentMatchListSerializer(serializers.ModelSerializer):
+
+    # contestants = TournamentMatchContestantsSerializer(many=True)
+    tournament = serializers.CharField(source="tournament.name")
+    contestants = serializers.SerializerMethodField()
+
+    class Meta:
+        model = TournamentMatch
+        fields = ["contestants", "tournament", "match_start"]
+
+    def get_contestants(self, obj):
+        return obj.contestants.values_list("name", flat=True)
 
 
 class TournamentMatchUpdateSerializer(serializers.ModelSerializer):

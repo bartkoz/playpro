@@ -120,7 +120,11 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     def save(self, *args, **kwargs):
         if self.winner != self.initial_winner and self.initial_winner:
             self.is_contested = True
-        elif self.winner == self.initial_winner and self.initial_winner and not self.is_final:
+        elif (
+            self.winner == self.initial_winner
+            and self.initial_winner
+            and not self.is_final
+        ):
             self.is_final = True
             self._update_teams_score()
 

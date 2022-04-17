@@ -28,6 +28,7 @@ from tournaments.serializers import (
     TournamentMatchSerializer,
     TournamentMatchUpdateSerializer,
     TournamentMatchContestantsSerializer,
+    TournamentMatchListSerializer,
 )
 from users.models import User
 from users.serializers import UserTeammatesSrializer
@@ -226,10 +227,14 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 
 class ScheduleAPIView(ListAPIView):
 
-    serializer_class = TournamentMatchSerializer
+    serializer_class = TournamentMatchListSerializer
 
     def get_queryset(self):
-        return TournamentMatch.objects.filter(
-            contestants__team_members__user__school=self.request.user.school,
-            match_start__gte=datetime.utcnow(),
-        ).order_by("match_start").distinct()
+        return (
+            TournamentMatch.objects.filter(
+                contestants__team_members__user__school=self.request.user.school,
+                match_start__gte=datetime.utcnow(),
+            )
+            .order_by("match_start")
+            .distinct()
+        )
