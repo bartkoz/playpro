@@ -6,28 +6,34 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournaments', '0001_initial'),
+        ("tournaments", "0001_initial"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tournamentteam',
-            name='tournament_joined',
+            model_name="tournamentteam",
+            name="tournament_joined",
             field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
-            model_name='tournament',
-            name='logo',
-            field=models.ImageField(upload_to='tournaments/18a45276-437e-4e1c-96c0-94f4b4d8495d'),
+            model_name="tournament",
+            name="logo",
+            field=models.ImageField(
+                upload_to="tournaments/18a45276-437e-4e1c-96c0-94f4b4d8495d"
+            ),
         ),
         migrations.AlterField(
-            model_name='tournamentmatch',
-            name='chat_channel',
-            field=models.CharField(default='BVF0P0VKZ2NI63R', max_length=15),
+            model_name="tournamentmatch",
+            name="chat_channel",
+            field=models.CharField(default="BVF0P0VKZ2NI63R", max_length=15),
         ),
         migrations.AlterField(
-            model_name='tournamentmatch',
-            name='contest_screenshot',
-            field=models.ImageField(blank=True, null=True, upload_to='tournament_result/5f0e6d09-2b33-4514-bf9b-e30d723d2e15'),
+            model_name="tournamentmatch",
+            name="contest_screenshot",
+            field=models.ImageField(
+                blank=True,
+                null=True,
+                upload_to="tournament_result/5f0e6d09-2b33-4514-bf9b-e30d723d2e15",
+            ),
         ),
     ]
