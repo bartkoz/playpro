@@ -12,8 +12,8 @@ from users.models import School
 
 
 class TournamentTeamFactory(factory.django.DjangoModelFactory):
-    school = School.objects.order_by("?").first()
-    tournament = Tournament.objects.order_by("?").first()
+    school = School.objects.first()
+    tournament = Tournament.objects.first()
     name = Faker(
         [
             "en_US",
@@ -29,6 +29,7 @@ class TournamentTeamFactory(factory.django.DjangoModelFactory):
 class TournamentTeamMemberFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
     team = factory.SubFactory(TournamentTeamFactory)
+    invitation_accepted = True
 
     class Meta:
         model = TournamentTeamMember

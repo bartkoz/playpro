@@ -33,7 +33,7 @@ class Tournament(TimestampAbstractModel, models.Model):
     platforms = models.ManyToManyField(TournamentPlatform)
     team_size = models.PositiveIntegerField()
     playoff_array = ArrayField(
-        ArrayField(models.IntegerField(), size=2), size=8, null=True
+        ArrayField(models.IntegerField(), size=2), size=8, null=True, blank=True
     )
 
 
@@ -94,7 +94,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         Tournament, on_delete=models.PROTECT, related_name="tournament_matches"
     )
     stage = models.CharField(choices=StageChoices.choices, max_length=20)
-    match_start = models.DateTimeField()
+    match_start = models.DateTimeField(blank=True, null=True)
     winner = models.ForeignKey(
         TournamentTeam, on_delete=models.PROTECT, blank=True, null=True
     )

@@ -41,8 +41,7 @@ def create_tournament_groups_or_ladder():
 
     for tournament in (
         Tournament.objects.annotate(groups_count=Count("tournament_groups"))
-        .filter(registration_close_date__lte=timezone.now(), groups_count=0)
-        .values_list("pk", flat=True)
+        .filter(registration_close_date__gte=timezone.now(), groups_count=0)
     ):
         team_size = tournament.team_size
         qs = TournamentTeam.objects.annotate(team_size=Count("team_members")).filter(
@@ -73,5 +72,4 @@ def create_tournament_groups_or_ladder():
                         tournament=tournament, stage=TournamentMatch.StageChoices.GROUP
                     )
                     for team in team_pair:
-                        obj.add(team)
-                        obj.save()
+                        obj.contestants.add(team)
