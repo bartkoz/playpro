@@ -4,7 +4,12 @@ import random
 from django.db.models import Count
 from django.utils import timezone
 
-from tournaments.models import Tournament, TournamentTeam, TournamentMatch, TournamentGroup
+from tournaments.models import (
+    Tournament,
+    TournamentTeam,
+    TournamentMatch,
+    TournamentGroup,
+)
 
 
 def get_division_value(team_count):
@@ -39,10 +44,9 @@ def build_chunks(chunk_size, data):
 
 def create_tournament_groups_or_ladder():
 
-    for tournament in (
-        Tournament.objects.annotate(groups_count=Count("tournament_groups"))
-        .filter(registration_close_date__gte=timezone.now(), groups_count=0)
-    ):
+    for tournament in Tournament.objects.annotate(
+        groups_count=Count("tournament_groups")
+    ).filter(registration_close_date__gte=timezone.now(), groups_count=0):
         team_size = tournament.team_size
         qs = TournamentTeam.objects.annotate(team_size=Count("team_members")).filter(
             tournament_id=tournament, team_size=team_size

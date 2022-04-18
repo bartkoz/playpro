@@ -17,8 +17,10 @@ def tournament_upload_path():
 def result_upload_path():
     return f"tournament_result/{uuid.uuid4()}"
 
+
 def create_match_chat():
     return ShortUUID(alphabet=settings.NOTIFICATION_CHARSET).random(length=15)
+
 
 class TournamentPlatform(TimestampAbstractModel, models.Model):
 
