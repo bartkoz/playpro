@@ -110,7 +110,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
     round_number = models.IntegerField(blank=True, null=True)
     chat_channel = models.CharField(
-        default=create_match_chat(),
+        default=create_match_chat,
         max_length=15,
     )
 

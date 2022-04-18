@@ -95,7 +95,7 @@ class User(TimestampAbstractModel, AbstractBaseUser, PermissionsMixin):
     last_email_reset = models.DateTimeField(auto_now=True)
     graduation_year = models.CharField(max_length=4)
     notifications_channel = models.CharField(
-        default=create_notification_channel(), max_length=10
+        default=create_notification_channel, max_length=10
     )
 
     objects = UserManager()
