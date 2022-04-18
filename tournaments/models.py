@@ -3,7 +3,6 @@ import uuid
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import F
 from shortuuid import ShortUUID
 
 from playpro.abstract import TimestampAbstractModel
@@ -18,6 +17,8 @@ def tournament_upload_path():
 def result_upload_path():
     return f"tournament_result/{uuid.uuid4()}"
 
+def create_match_chat():
+    return ShortUUID(alphabet=settings.NOTIFICATION_CHARSET).random(length=15)
 
 class TournamentPlatform(TimestampAbstractModel, models.Model):
 
@@ -106,7 +107,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
     round_number = models.IntegerField(blank=True, null=True)
     chat_channel = models.CharField(
-        default=ShortUUID(alphabet=settings.NOTIFICATION_CHARSET).random(length=15),
+        default=create_match_chat(),
         max_length=15,
     )
 

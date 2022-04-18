@@ -4,7 +4,7 @@ import random
 from django.db.models import Count
 from django.utils import timezone
 
-from tournaments.models import Tournament, TournamentTeam, TournamentMatch
+from tournaments.models import Tournament, TournamentTeam, TournamentMatch, TournamentGroup
 
 
 def get_division_value(team_count):
@@ -66,6 +66,9 @@ def create_tournament_groups_or_ladder():
             group_size = get_division_value(qs.count())
             chunks = build_chunks(group_size, randomized_qs)
             for chunk in chunks:
+                group = TournamentGroup.objects.create(tournament=tournament)
+                for item in chunk:
+                    group.teams.add(item)
                 team_pairs = list(itertools.combinations(chunk, 2))
                 for team_pair in team_pairs:
                     obj = TournamentMatch.objects.create(
