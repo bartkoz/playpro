@@ -88,6 +88,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.initial_winner = self.winner
+        self.initial_is_final = self.is_final
 
     class StageChoices(models.TextChoices):
         PLAYOFF = "playoff", _("Playoff")
@@ -123,12 +124,8 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     def save(self, *args, **kwargs):
         if self.winner != self.initial_winner and self.initial_winner:
             self.is_contested = True
-        elif (
-            self.winner == self.initial_winner
-            and self.initial_winner
-            and not self.is_final
-        ):
+        elif self.winner == self.initial_winner and self.initial_winner:
             self.is_final = True
+        if not self.initial_is_final and self.is_final:
             self._update_teams_score()
-
         super().save(*args, **kwargs)

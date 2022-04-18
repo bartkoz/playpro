@@ -1,4 +1,6 @@
 import json
+import uuid
+
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from django.contrib.auth.models import AnonymousUser
@@ -34,6 +36,7 @@ def check_match_lobby_eligibility(user, room_channel):
 
 class NotificationConsumer(WebsocketConsumer):
     def connect(self):
+        self.channel_group_name = uuid.uuid4()
         self.user = get_user(self.scope)
         if self.user.is_authenticated:
             self.channel_group_name = self.user.notifications_channel
