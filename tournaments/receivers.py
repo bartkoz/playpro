@@ -31,8 +31,3 @@ def playoff_handler(sender, instance, **kwargs):
             for team in chunk:
                 obj.add(team)
                 obj.save()
-
-
-@receiver(pre_save, sender=TournamentMatch)
-def update_team_wins_and_looses(sender, instance, **kwargs):
-    pass
