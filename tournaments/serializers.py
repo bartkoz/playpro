@@ -126,6 +126,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     avatar = serializers.URLField(source="user.avatar.image.url", read_only=True)
     invitation_accepted = serializers.SerializerMethodField()
     user_id = serializers.IntegerField(source="user.pk", read_only=True)
+    gamer_id = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentTeamMember
@@ -136,6 +137,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             "is_captain",
             "avatar",
             "invitation_accepted",
+            "gamer_id"
         )
 
     def get_is_captain(self, obj):
@@ -144,6 +146,12 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     def get_invitation_accepted(self, obj):
         mapping = {None: "pending", False: "rejected", True: "accepted"}
         return mapping[obj.invitation_accepted]
+
+    def get_gamer_id(self, obj):
+        return {"ea_games_id": obj.user.ea_games_id,
+                "epic_games_id": obj.user.epic_games_id,
+                "ps_network_id": obj.user.ps_network_id,
+                "riot_id": obj.user.riot_id}
 
 
 class InvitationSerializer(serializers.ModelSerializer):
@@ -254,7 +262,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
             return (
                 "winner"
                 if self.context["request"].user
-                in self.context["instance"].winner.team_members
+                in obj.winner.team_members.all()
                 else "loser"
             )
         else:
