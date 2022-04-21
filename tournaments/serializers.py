@@ -265,7 +265,7 @@ class TournamentMatchContestantsSerializer(serializers.ModelSerializer):
 
 class TournamentMatchSerializer(serializers.ModelSerializer):
 
-    contestants = serializers.SerializerMethodField()
+    contestants = TournamentMatchContestantsSerializer(many=True)
     tournament = serializers.CharField(source="tournament.name")
     winner = serializers.SerializerMethodField()
 
@@ -284,14 +284,6 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
             )
         else:
             return "pending"
-
-    def get_contestants(self, obj):
-        data = list(obj.contestants.all())
-        if self.context["request"].user.pk in obj.contestants.all()[
-            0
-        ].team_members.values_list("user", flat=True):
-            data.reverse()
-        return TournamentMatchContestantsSerializer(data, many=True).data
 
 
 class TournamentMatchListSerializer(serializers.ModelSerializer):
