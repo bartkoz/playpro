@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+import pytz
 from django.db.models import Sum, F
 from rest_framework import serializers
 
@@ -137,7 +140,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             "is_captain",
             "avatar",
             "invitation_accepted",
-            "gamer_id"
+            "gamer_id",
         )
 
     def get_is_captain(self, obj):
@@ -148,10 +151,27 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         return mapping[obj.invitation_accepted]
 
     def get_gamer_id(self, obj):
-        return {"ea_games_id": obj.user.ea_games_id,
-                "epic_games_id": obj.user.epic_games_id,
-                "ps_network_id": obj.user.ps_network_id,
-                "riot_id": obj.user.riot_id}
+        match = self.context.get("obj")
+        if match:
+            if pytz.utc.localize(datetime.utcnow()) >= match.match_start - timedelta(
+                minutes=30
+            ) or obj.user.pk in self.context[
+                "user_team"
+            ].team_members.values_list(
+                "user", flat=True
+            ):
+                return {
+                    "ea_games_id": obj.user.ea_games_id,
+                    "epic_games_id": obj.user.epic_games_id,
+                    "ps_network_id": obj.user.ps_network_id,
+                    "riot_id": obj.user.riot_id,
+                }
+        return {
+            "ea_games_id": "",
+            "epic_games_id": "",
+            "ps_network_id": "",
+            "riot_id": "",
+        }
 
 
 class InvitationSerializer(serializers.ModelSerializer):
@@ -261,8 +281,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
         elif obj.is_final:
             return (
                 "winner"
-                if self.context["request"].user
-                in obj.winner.team_members.all()
+                if self.context["request"].user in obj.winner.team_members.all()
                 else "loser"
             )
         else:
