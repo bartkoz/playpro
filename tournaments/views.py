@@ -194,6 +194,19 @@ class TournamentMatchViewSet(
             return TournamentMatchUpdateSerializer
         return TournamentMatchSerializer
 
+    def get_serializer_context(self):
+        ctx = super().get_serializer_context()
+        if self.action == "retrieve":
+            ctx["match_obj"] = self.get_object()
+            ctx["user_team"] = [
+                x
+                for x in self.get_object().contestants.all()
+                if self.request.user.pk in x.team_members.values_list("user", flat=True)
+            ][
+                0
+            ]  # todo
+        return ctx
+
     def get_queryset(self):
         return TournamentMatch.objects.filter(
             contestants__team_members__user=self.request.user
@@ -232,7 +245,7 @@ class ScheduleAPIView(ListAPIView):
     def get_queryset(self):
         return (
             TournamentMatch.objects.filter(
-                contestants__team_members__user=self.request.user,
+                # contestants__team_members__user=self.request.user,  # todo
                 match_start__gte=datetime.utcnow(),
             )
             .order_by("match_start")

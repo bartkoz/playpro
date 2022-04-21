@@ -3,6 +3,7 @@ import uuid
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import F
 from shortuuid import ShortUUID
 
 from playpro.abstract import TimestampAbstractModel
