@@ -6,35 +6,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tournaments", "0004_tournamentgame_tournament_tournament_img_and_more"),
+        ('tournaments', '0004_tournamentgame_tournament_tournament_img_and_more'),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name="tournamentgameplatformmap",
-            name="gamer_tag_types",
+            model_name='tournamentgameplatformmap',
+            name='gamer_tag_types',
         ),
         migrations.AlterField(
-            model_name="tournament",
-            name="logo",
-            field=models.ImageField(
-                upload_to="tournaments/3e9ef415-abda-4f4a-a0ef-d4993382b55b"
-            ),
+            model_name='tournament',
+            name='logo',
+            field=models.ImageField(upload_to='tournaments/3e9ef415-abda-4f4a-a0ef-d4993382b55b'),
         ),
         migrations.AlterField(
-            model_name="tournament",
-            name="tournament_img",
-            field=models.ImageField(
-                null=True, upload_to="tournaments/6d79d790-4d5d-4686-a594-16c2d46c9853"
-            ),
+            model_name='tournament',
+            name='tournament_img',
+            field=models.ImageField(null=True, upload_to='tournaments/6d79d790-4d5d-4686-a594-16c2d46c9853'),
         ),
         migrations.AlterField(
-            model_name="tournamentmatch",
-            name="contest_screenshot",
-            field=models.ImageField(
-                blank=True,
-                null=True,
-                upload_to="tournament_result/f4f5e924-ade6-4f8d-893f-f3e1dbd91d27",
-            ),
+            model_name='tournamentmatch',
+            name='contest_screenshot',
+            field=models.ImageField(blank=True, null=True, upload_to='tournament_result/f4f5e924-ade6-4f8d-893f-f3e1dbd91d27'),
         ),
     ]

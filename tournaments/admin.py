@@ -6,10 +6,7 @@ from tournaments.models import (
     TournamentTeam,
     TournamentTeamMember,
     TournamentGroup,
-    TournamentMatch,
-    TournamentGame,
-    TournamentGamePlatformMap,
-    GamerTagChoice,
+    TournamentMatch, TournamentGame, TournamentGamePlatformMap, GamerTagChoice,
 )
 
 admin.site.register(TournamentPlatform)
