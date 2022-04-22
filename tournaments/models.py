@@ -3,6 +3,7 @@ import uuid
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import F
 from shortuuid import ShortUUID
 
 from playpro.abstract import TimestampAbstractModel
@@ -26,33 +27,6 @@ class TournamentPlatform(TimestampAbstractModel, models.Model):
 
     name = models.CharField(max_length=255)
 
-    def __str__(self):
-        return self.name
-
-
-class TournamentGame(TimestampAbstractModel, models.Model):
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
-
-
-class GamerTagChoice(TimestampAbstractModel, models.Model):
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.name
-
-
-class TournamentGamePlatformMap(TimestampAbstractModel, models.Model):
-
-    platform = models.ForeignKey(TournamentPlatform, on_delete=models.PROTECT)
-    game = models.ForeignKey(TournamentGame, on_delete=models.PROTECT)
-    gamer_tag_types = models.ManyToManyField(GamerTagChoice)
-
-    def __str__(self):
-        return f"{self.platform.name} - {self.game.name}"
-
 
 class Tournament(TimestampAbstractModel, models.Model):
     registration_open_date = models.DateTimeField()
@@ -60,10 +34,8 @@ class Tournament(TimestampAbstractModel, models.Model):
     registration_check_in_date = models.DateTimeField()
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to=tournament_upload_path())
-    tournament_img = models.ImageField(upload_to=tournament_upload_path(), null=True)
     platforms = models.ManyToManyField(TournamentPlatform)
     team_size = models.PositiveIntegerField()
-    game = models.ForeignKey(TournamentGame, null=True, on_delete=models.PROTECT)
     playoff_array = ArrayField(
         ArrayField(models.IntegerField(), size=2), size=8, null=True, blank=True
     )

@@ -9,7 +9,7 @@ from tournaments.models import (
     TournamentTeam,
     TournamentTeamMember,
     TournamentGroup,
-    TournamentMatch, TournamentGamePlatformMap,
+    TournamentMatch,
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -150,9 +150,6 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         mapping = {None: "pending", False: "rejected", True: "accepted"}
         return mapping[obj.invitation_accepted]
 
-    def __get_gamer_tag_educated_guess(self, tournament):
-        return TournamentGamePlatformMap.objects.filter(game=tournament.game, platform__in=tournament.platforms)
-
     def get_gamer_id(self, obj):
         match = self.context.get("match_obj")
         if match:
@@ -166,14 +163,12 @@ class TeamMemberSerializer(serializers.ModelSerializer):
                     "epic_games_id": obj.user.epic_games_id,
                     "ps_network_id": obj.user.ps_network_id,
                     "riot_id": obj.user.riot_id,
-                    "xbox_id": obj.user.xbox_id,
                 }
         return {
             "ea_games_id": "",
             "epic_games_id": "",
             "ps_network_id": "",
             "riot_id": "",
-            "xbox_id": "",
         }
 
 
@@ -273,7 +268,6 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
     contestants = TournamentMatchContestantsSerializer(many=True)
     tournament = serializers.CharField(source="tournament.name")
     winner = serializers.SerializerMethodField()
-    tournament_img = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentMatch
@@ -290,11 +284,6 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
             )
         else:
             return "pending"
-
-    def get_tournament_img(self, obj):
-        img = obj.tournament.tournament_img
-        if img:
-            return img.url
 
 
 class TournamentMatchListSerializer(serializers.ModelSerializer):
