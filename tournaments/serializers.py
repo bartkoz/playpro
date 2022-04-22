@@ -9,7 +9,8 @@ from tournaments.models import (
     TournamentTeam,
     TournamentTeamMember,
     TournamentGroup,
-    TournamentMatch, TournamentGamePlatformMap,
+    TournamentMatch,
+    TournamentGamePlatformMap,
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -151,7 +152,9 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         return mapping[obj.invitation_accepted]
 
     def __get_gamer_tag_educated_guess(self, tournament):
-        return TournamentGamePlatformMap.objects.filter(game=tournament.game, platform__in=tournament.platforms)
+        return TournamentGamePlatformMap.objects.filter(
+            game=tournament.game, platform__in=tournament.platforms
+        )
 
     def get_gamer_id(self, obj):
         match = self.context.get("match_obj")
