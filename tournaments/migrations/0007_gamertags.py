@@ -6,20 +6,14 @@ from django.db import migrations, models
 def create_gamer_tag_choices(apps, schema_editor):
     GamerTagChoice = apps.get_model("tournaments", "GamerTagChoice")
     db_alias = schema_editor.connection.alias
-    for gamer_type in [
-        "epic_games_id",
-        "ea_games_id",
-        "ps_network_id",
-        "riot_id",
-        "xbox_id",
-    ]:
+    for gamer_type in ['epic_games_id', 'ea_games_id', 'ps_network_id', 'riot_id', 'xbox_id']:
         GamerTagChoice.objects.using(db_alias).create(name=gamer_type)
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("tournaments", "0006_gamertagchoice_alter_tournament_logo_and_more"),
+        ('tournaments', '0006_gamertagchoice_alter_tournament_logo_and_more'),
     ]
 
     operations = [migrations.RunPython(create_gamer_tag_choices)]
