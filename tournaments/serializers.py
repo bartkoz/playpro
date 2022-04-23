@@ -165,7 +165,10 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             ) or obj.user.pk in self.context["user_team"].team_members.values_list(
                 "user", flat=True
             ):
-                return {x: getattr(obj.user, x) for x in get_gamer_tag_educated_guess(obj.team.tournament)}
+                return {
+                    x: getattr(obj.user, x)
+                    for x in get_gamer_tag_educated_guess(obj.team.tournament)
+                }
         return {x: "" for x in get_gamer_tag_educated_guess(obj.team.tournament)}
 
 
