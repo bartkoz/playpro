@@ -5,6 +5,7 @@ from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 
@@ -32,6 +33,10 @@ from tournaments.serializers import (
 )
 from users.models import User
 from users.serializers import UserTeammatesSrializer
+
+
+class CustomPaginator(PageNumberPagination):
+    page_size = 10
 
 
 class TournamentBaseViewSet(ReadOnlyModelViewSet):
@@ -241,6 +246,7 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 class ScheduleAPIView(ListAPIView):
 
     serializer_class = TournamentMatchListSerializer
+    # pagination_class = CustomPaginator
 
     def get_queryset(self):
         return (
