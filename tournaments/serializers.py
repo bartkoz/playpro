@@ -10,8 +10,15 @@ from tournaments.models import (
     TournamentTeamMember,
     TournamentGroup,
     TournamentMatch,
+    TournamentGamePlatformMap,
 )
 from django.utils.translation import gettext_lazy as _
+
+
+def get_gamer_tag_educated_guess(tournament):
+    return TournamentGamePlatformMap.objects.filter(
+        game=tournament.game, platform__in=tournament.platforms.all()
+    ).values_list("gamer_tag_types__name", flat=True)
 
 
 class TournamentListSerializer(serializers.ModelSerializer):
@@ -159,17 +166,10 @@ class TeamMemberSerializer(serializers.ModelSerializer):
                 "user", flat=True
             ):
                 return {
-                    "ea_games_id": obj.user.ea_games_id,
-                    "epic_games_id": obj.user.epic_games_id,
-                    "ps_network_id": obj.user.ps_network_id,
-                    "riot_id": obj.user.riot_id,
+                    x: getattr(obj.user, x)
+                    for x in get_gamer_tag_educated_guess(obj.team.tournament)
                 }
-        return {
-            "ea_games_id": "",
-            "epic_games_id": "",
-            "ps_network_id": "",
-            "riot_id": "",
-        }
+        return {x: "" for x in get_gamer_tag_educated_guess(obj.team.tournament)}
 
 
 class InvitationSerializer(serializers.ModelSerializer):
@@ -268,6 +268,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
     contestants = TournamentMatchContestantsSerializer(many=True)
     tournament = serializers.CharField(source="tournament.name")
     winner = serializers.SerializerMethodField()
+    tournament_img = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentMatch
@@ -284,6 +285,11 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
             )
         else:
             return "pending"
+
+    def get_tournament_img(self, obj):
+        img = obj.tournament.tournament_img
+        if img:
+            return img.url
 
 
 class TournamentMatchListSerializer(serializers.ModelSerializer):
