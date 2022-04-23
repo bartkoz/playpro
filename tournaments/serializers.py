@@ -15,6 +15,12 @@ from tournaments.models import (
 from django.utils.translation import gettext_lazy as _
 
 
+def get_gamer_tag_educated_guess(tournament):
+    return TournamentGamePlatformMap.objects.filter(
+        game=tournament.game, platform__in=tournament.platforms.all()
+    ).values_list("gamer_tag_types__name", flat=True)
+
+
 class TournamentListSerializer(serializers.ModelSerializer):
 
     platforms = serializers.SerializerMethodField()
@@ -151,11 +157,6 @@ class TeamMemberSerializer(serializers.ModelSerializer):
         mapping = {None: "pending", False: "rejected", True: "accepted"}
         return mapping[obj.invitation_accepted]
 
-    def __get_gamer_tag_educated_guess(self, tournament):
-        return TournamentGamePlatformMap.objects.filter(
-            game=tournament.game, platform__in=tournament.platforms
-        )
-
     def get_gamer_id(self, obj):
         match = self.context.get("match_obj")
         if match:
@@ -164,20 +165,8 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             ) or obj.user.pk in self.context["user_team"].team_members.values_list(
                 "user", flat=True
             ):
-                return {
-                    "ea_games_id": obj.user.ea_games_id,
-                    "epic_games_id": obj.user.epic_games_id,
-                    "ps_network_id": obj.user.ps_network_id,
-                    "riot_id": obj.user.riot_id,
-                    "xbox_id": obj.user.xbox_id,
-                }
-        return {
-            "ea_games_id": "",
-            "epic_games_id": "",
-            "ps_network_id": "",
-            "riot_id": "",
-            "xbox_id": "",
-        }
+                return {x: getattr(obj.user, x) for x in get_gamer_tag_educated_guess(obj.team.tournament)}
+        return {x: "" for x in get_gamer_tag_educated_guess(obj.team.tournament)}
 
 
 class InvitationSerializer(serializers.ModelSerializer):
