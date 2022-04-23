@@ -1,9 +1,9 @@
+
 import uuid
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
-from django.db.models import F
 from shortuuid import ShortUUID
 
 from playpro.abstract import TimestampAbstractModel
@@ -26,6 +26,33 @@ def create_match_chat():
 class TournamentPlatform(TimestampAbstractModel, models.Model):
 
     name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class TournamentGame(TimestampAbstractModel, models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class GamerTagChoice(TimestampAbstractModel, models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class TournamentGamePlatformMap(TimestampAbstractModel, models.Model):
+
+    platform = models.ForeignKey(TournamentPlatform, on_delete=models.PROTECT)
+    game = models.ForeignKey(TournamentGame, on_delete=models.PROTECT)
+    gamer_tag_types = models.ManyToManyField(GamerTagChoice)
+
+    def __str__(self):
+        return f"{self.platform.name} - {self.game.name}"
 
 
 class Tournament(TimestampAbstractModel, models.Model):
