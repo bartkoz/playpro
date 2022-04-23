@@ -1,4 +1,3 @@
-
 import uuid
 
 from django.conf import settings
@@ -68,6 +67,9 @@ class Tournament(TimestampAbstractModel, models.Model):
     playoff_array = ArrayField(
         ArrayField(models.IntegerField(), size=2), size=8, null=True, blank=True
     )
+
+    def __str__(self):
+        return f"{self.game} | {self.name} | {' '.join([str(x) for x in self.platforms.all()])}"
 
 
 class TournamentTeam(TimestampAbstractModel, models.Model):
