@@ -61,8 +61,10 @@ class Tournament(TimestampAbstractModel, models.Model):
     registration_check_in_date = models.DateTimeField()
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to=tournament_upload_path())
+    tournament_img = models.ImageField(upload_to=tournament_upload_path(), null=True)
     platforms = models.ManyToManyField(TournamentPlatform)
     team_size = models.PositiveIntegerField()
+    game = models.ForeignKey(TournamentGame, null=True, on_delete=models.PROTECT)
     playoff_array = ArrayField(
         ArrayField(models.IntegerField(), size=2), size=8, null=True, blank=True
     )
