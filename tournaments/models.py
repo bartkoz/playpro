@@ -14,7 +14,7 @@ def tournament_upload_path():
     return f"tournaments/{uuid.uuid4()}"
 
 
-def result_upload_path(tournament_match):
+def result_upload_path(tournament_match, filename):
     return f"tournament_result/{tournament_match.tournament.name}/{uuid.uuid4()}"
 
 
