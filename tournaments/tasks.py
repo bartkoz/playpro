@@ -4,6 +4,7 @@ import random
 from django.db.models import Count
 from django.utils import timezone
 
+from playpro.celery import app
 from tournaments.models import (
     Tournament,
     TournamentTeam,
@@ -42,6 +43,7 @@ def build_chunks(chunk_size, data):
     return final_chunks
 
 
+@app.task()
 def create_tournament_groups_or_ladder():
 
     for tournament in Tournament.objects.annotate(
