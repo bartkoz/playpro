@@ -8,13 +8,16 @@ import tournaments.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournaments', '0003_alter_tournament_logo_alter_tournament_playoff_array_and_more'),
+        (
+            "tournaments",
+            "0003_alter_tournament_logo_alter_tournament_playoff_array_and_more",
+        ),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tournamentmatch',
-            name='place_finished',
+            model_name="tournamentmatch",
+            name="place_finished",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

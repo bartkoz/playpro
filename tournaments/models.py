@@ -14,8 +14,8 @@ def tournament_upload_path():
     return f"tournaments/{uuid.uuid4()}"
 
 
-def result_upload_path():
-    return f"tournament_result/{uuid.uuid4()}"
+def result_upload_path(tournament_match):
+    return f"tournament_result/{tournament_match.tournament.name}/{uuid.uuid4()}"
 
 
 def create_match_chat():
@@ -60,7 +60,9 @@ class Tournament(TimestampAbstractModel, models.Model):
     registration_check_in_date = models.DateTimeField()
     name = models.CharField(max_length=255)
     logo = models.ImageField(upload_to=tournament_upload_path())
-    tournament_img = models.ImageField(upload_to=tournament_upload_path(), null=True)
+    tournament_img = models.ImageField(
+        upload_to=tournament_upload_path(), null=True, blank=True
+    )
     platforms = models.ManyToManyField(TournamentPlatform)
     team_size = models.PositiveIntegerField()
     game = models.ForeignKey(TournamentGame, null=True, on_delete=models.PROTECT)
@@ -137,7 +139,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     is_contested = models.BooleanField(default=False)
     is_final = models.BooleanField(default=False)
     contest_screenshot = models.ImageField(
-        upload_to=result_upload_path(), blank=True, null=True
+        upload_to=result_upload_path, blank=True, null=True
     )
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
     round_number = models.IntegerField(blank=True, null=True)
@@ -147,6 +149,9 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     )
     place_finished = models.IntegerField(blank=True, null=True)
 
+    # def __str__(self):
+    #     return f'{self.tournament} | {" - ".join(self.contestants.values_list("name", flat=True))}'
+
     def _update_teams_score(self):
         self.winner.wins += 1
         self.winner.save()
@@ -155,10 +160,13 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         loser.save()
 
     def save(self, *args, **kwargs):
-        if self.winner != self.initial_winner and self.initial_winner:
-            self.is_contested = True
-        elif self.winner == self.initial_winner and self.initial_winner:
-            self.is_final = True
-        if not self.initial_is_final and self.is_final:
-            self._update_teams_score()
-        super().save(*args, **kwargs)
+        if self.place_finished:
+            super().save(*args, **kwargs)
+        else:
+            if self.winner != self.initial_winner and self.initial_winner:
+                self.is_contested = True
+            elif self.winner == self.initial_winner and self.initial_winner:
+                self.is_final = True
+            if not self.initial_is_final and self.is_final:
+                self._update_teams_score()
+            super().save(*args, **kwargs)

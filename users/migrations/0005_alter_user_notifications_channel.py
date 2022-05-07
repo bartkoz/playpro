@@ -7,13 +7,15 @@ import users.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0004_alter_user_notifications_channel'),
+        ("users", "0004_alter_user_notifications_channel"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='notifications_channel',
-            field=models.CharField(default=users.models.create_notification_channel, max_length=10),
+            model_name="user",
+            name="notifications_channel",
+            field=models.CharField(
+                default=users.models.create_notification_channel, max_length=10
+            ),
         ),
     ]
