@@ -145,6 +145,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         default=create_match_chat,
         max_length=15,
     )
+    place_finished = models.IntegerField(blank=True, null=True)
 
     def _update_teams_score(self):
         self.winner.wins += 1

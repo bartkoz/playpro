@@ -309,4 +309,4 @@ class TournamentMatchListSerializer(serializers.ModelSerializer):
 class TournamentMatchUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentMatch
-        fields = ("winner",)
+        fields = ("winner", "place_finished")
