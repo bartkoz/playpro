@@ -160,10 +160,12 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     def get_gamer_id(self, obj):
         match = self.context.get("match_obj")
         if match:
-            if pytz.utc.localize(datetime.utcnow()) >= match.match_start - timedelta(
-                minutes=30
-            ) or obj.user.pk in self.context["user_team"].team_members.values_list(
-                "user", flat=True
+            if (
+                match.match_start
+                and pytz.utc.localize(datetime.utcnow())
+                >= match.match_start - timedelta(minutes=30)
+                or obj.user.pk
+                in self.context["user_team"].team_members.values_list("user", flat=True)
             ):
                 return {
                     x: getattr(obj.user, x)

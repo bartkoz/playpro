@@ -28,4 +28,3 @@ app.conf.beat_schedule = {
 @app.task()
 def debug_task():
     print("PING")
-

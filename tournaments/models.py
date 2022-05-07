@@ -15,7 +15,7 @@ def tournament_upload_path():
 
 
 def result_upload_path(tournament_match, filename):
-    return f"tournament_result/{tournament_match.tournament.name}/{uuid.uuid4()}"
+    return f"tournament_result/{tournament_match.tournament.name}/{','.join(tournament_match.contestants.values_list('name', flat=True))}{uuid.uuid4()}"
 
 
 def create_match_chat():
