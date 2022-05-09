@@ -9,13 +9,15 @@ import tournaments.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tournaments', '0004_gamertagchoice_tournamentgame_and_more'),
+        ("tournaments", "0004_gamertagchoice_tournamentgame_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tournamentmatch',
-            name='result_submitted',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.IntegerField(), blank=True, null=True, size=2),
+            model_name="tournamentmatch",
+            name="result_submitted",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.IntegerField(), blank=True, null=True, size=2
+            ),
         ),
     ]

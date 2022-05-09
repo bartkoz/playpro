@@ -149,6 +149,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             "invitation_accepted",
             "gamer_id",
         )
+        read_only_fields = fields
 
     def get_is_captain(self, obj):
         return obj.team.captain == obj.user
@@ -229,6 +230,7 @@ class TournamentGroupTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentTeam
         fields = ("school", "name", "wins", "losses")
+        read_only_fields = fields
 
 
 class TournamentGroupSerializer(serializers.ModelSerializer):
@@ -238,6 +240,7 @@ class TournamentGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentGroup
         fields = ("teams", "tournament")
+        read_only_fields = fields
 
     def get_teams(self, obj):
         return TournamentGroupTeamSerializer(
@@ -263,6 +266,7 @@ class TournamentMatchContestantsSerializer(serializers.ModelSerializer):
             "school",
             "max_team_members",
         )
+        read_only_fields = fields
 
 
 class TournamentMatchSerializer(serializers.ModelSerializer):
@@ -276,6 +280,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentMatch
         fields = "__all__"
+        read_only_fields = fields
 
     def get_winner(self, obj):
         if obj.is_contested:
@@ -295,7 +300,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
             return img.url
 
     def get_result_submitted(self, obj):
-        user = self.context['request'].user
+        user = self.context["request"].user
         return obj.has_submitted_result(user)
 
 
@@ -308,18 +313,22 @@ class TournamentMatchListSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentMatch
         fields = ["contestants", "tournament", "match_start"]
+        read_only_fields = fields
 
     def get_contestants(self, obj):
         return obj.contestants.values_list("name", flat=True)
 
 
 class TournamentMatchUpdateSerializer(serializers.Serializer):
-     winner = serializers.ChoiceField(choices=(("win", "win"), ("loss", "loss")), required=False)
-     place_finished = serializers.IntegerField(required=False)
+    winner = serializers.ChoiceField(
+        choices=(("win", "win"), ("loss", "loss")), required=False
+    )
+    place_finished = serializers.IntegerField(required=False)
 
 
 class TournamentMatchContestSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = TournamentMatch
-        fields = ["contest_screenshot", ]
+        fields = [
+            "contest_screenshot",
+        ]
