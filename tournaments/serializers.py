@@ -316,3 +316,10 @@ class TournamentMatchListSerializer(serializers.ModelSerializer):
 class TournamentMatchUpdateSerializer(serializers.Serializer):
      winner = serializers.ChoiceField(choices=(("win", "win"), ("loss", "loss")), required=False)
      place_finished = serializers.IntegerField(required=False)
+
+
+class TournamentMatchContestSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = TournamentMatch
+        fields = ["contest_screenshot", ]

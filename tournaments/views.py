@@ -29,7 +29,7 @@ from tournaments.serializers import (
     TournamentMatchSerializer,
     TournamentMatchUpdateSerializer,
     TournamentMatchContestantsSerializer,
-    TournamentMatchListSerializer,
+    TournamentMatchListSerializer, TournamentMatchContestSerializer,
 )
 from users.models import User
 from users.serializers import UserTeammatesSrializer
@@ -195,6 +195,8 @@ class TournamentMatchViewSet(
     mixins.UpdateModelMixin,
 ):
     def get_serializer_class(self):
+        if self.action == "screenshot_contest":
+            return TournamentMatchContestSerializer
         if self.action in ["update", "partial_update"]:
             return TournamentMatchUpdateSerializer
         return TournamentMatchSerializer
@@ -244,6 +246,13 @@ class TournamentMatchViewSet(
         else:
             match_status = "pending"
         return Response({"status": match_status})
+
+    @action(methods=("patch", "put"), detail=True)
+    def screenshot_contest(self, request):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
 
 class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
