@@ -148,6 +148,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         max_length=15,
     )
     place_finished = models.IntegerField(blank=True, null=True)
+    result_submitted = ArrayField(models.IntegerField(), size=2, blank=True, default=list)
 
     # def __str__(self):
     #     return f'{self.tournament} | {" - ".join(self.contestants.values_list("name", flat=True))}'
@@ -170,3 +171,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
             if not self.initial_is_final and self.is_final:
                 self._update_teams_score()
             super().save(*args, **kwargs)
+
+    def has_submitted_result(self, user):
+        user_team = self.contestants.filter(team_members__user=user).first()
+        return user_team.pk in self.result_submitted

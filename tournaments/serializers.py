@@ -271,6 +271,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
     tournament = serializers.CharField(source="tournament.name")
     winner = serializers.SerializerMethodField()
     tournament_img = serializers.SerializerMethodField()
+    result_submitted = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentMatch
@@ -293,6 +294,10 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
         if img:
             return img.url
 
+    def get_result_submitted(self, obj):
+        user = self.context['request'].user
+        return obj.has_submitted_result(user)
+
 
 class TournamentMatchListSerializer(serializers.ModelSerializer):
 
@@ -308,7 +313,6 @@ class TournamentMatchListSerializer(serializers.ModelSerializer):
         return obj.contestants.values_list("name", flat=True)
 
 
-class TournamentMatchUpdateSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = TournamentMatch
-        fields = ("winner", "place_finished")
+class TournamentMatchUpdateSerializer(serializers.Serializer):
+     winner = serializers.ChoiceField(choices=(("win", "win"), ("loss", "loss")), required=False)
+     place_finished = serializers.IntegerField(required=False)

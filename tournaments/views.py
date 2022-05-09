@@ -217,6 +217,34 @@ class TournamentMatchViewSet(
             contestants__team_members__user=self.request.user
         )
 
+    def update(self, request, *args, **kwargs):
+        obj = self.get_object()
+        serializer = self.get_serializer_class()
+        user_team = obj.contestants.filter(team_members__user=request.user).first()
+        if user_team.pk not in obj.result_submitted:
+            serializer_obj = serializer(data=request.data)
+            serializer_obj.is_valid(raise_exception=True)
+            if serializer.validated_data == 'win':
+                obj.winner = user_team
+            else:
+                opposing_team = list(obj.contestants.all())
+                opposing_team.remove(user_team)
+                opposing_team = opposing_team[0]
+                obj.winner = opposing_team
+            obj.result_submitted.append(user_team.pk)
+            obj.save()
+        if obj.is_contested:
+            match_status = "contested"
+        elif obj.is_final:
+            match_status = (
+                "winner"
+                if self.request.user in obj.winner.team_members.all()
+                else "loser"
+            )
+        else:
+            match_status = "pending"
+        return Response({"status": match_status})
+
 
 class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 
