@@ -290,7 +290,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
             "winner",
             "is_contested",
             "is_final",
-            "contestant_screenshot",
+            "contest_screenshot",
             "round_number",
             "chat_channel",
             "place_finished",
