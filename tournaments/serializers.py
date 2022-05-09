@@ -279,7 +279,22 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TournamentMatch
-        fields = "__all__"
+        fields = [
+            "contestants",
+            "tournament",
+            "winner",
+            "tournament_img",
+            "result_submitted",
+            "stage",
+            "match_start",
+            "winner",
+            "is_contested",
+            "is_final",
+            "contestant_screenshot",
+            "round_number",
+            "chat_channel",
+            "place_finished",
+        ]
         read_only_fields = fields
 
     def get_winner(self, obj):
