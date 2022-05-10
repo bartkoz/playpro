@@ -6,6 +6,7 @@ from django.db import models
 from shortuuid import ShortUUID
 
 from playpro.abstract import TimestampAbstractModel
+from tournaments.validators import ImageSizeValidator
 from users.models import School, User
 from django.utils.translation import gettext_lazy as _
 
@@ -139,7 +140,10 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     is_contested = models.BooleanField(default=False)
     is_final = models.BooleanField(default=False)
     contest_screenshot = models.ImageField(
-        upload_to=result_upload_path, blank=True, null=True
+        upload_to=result_upload_path,
+        blank=True,
+        null=True,
+        validators=[ImageSizeValidator(10)],
     )
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
     round_number = models.IntegerField(blank=True, null=True)
