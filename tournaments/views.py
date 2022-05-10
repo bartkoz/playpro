@@ -284,7 +284,7 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 class ScheduleAPIView(ListAPIView):
 
     serializer_class = TournamentMatchListSerializer
-    # pagination_class = CustomPaginator
+    pagination_class = CustomPaginator
 
     def get_queryset(self):
         return (
