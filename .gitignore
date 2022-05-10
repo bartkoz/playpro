@@ -68,3 +68,4 @@ celerybeat-schedule
 
 sphinx/_build
 playpro/production.py
+static/
