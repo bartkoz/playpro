@@ -60,7 +60,7 @@ class Tournament(TimestampAbstractModel, models.Model):
     registration_close_date = models.DateTimeField()
     registration_check_in_date = models.DateTimeField()
     name = models.CharField(max_length=255)
-    logo = models.ImageField(upload_to=tournament_upload_path())
+    logo = models.FileField(upload_to=tournament_upload_path())
     tournament_img = models.ImageField(
         upload_to=tournament_upload_path(), null=True, blank=True
     )
