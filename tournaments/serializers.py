@@ -280,6 +280,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentMatch
         fields = [
+            "id",
             "contestants",
             "tournament",
             "winner",
