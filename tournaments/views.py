@@ -5,6 +5,7 @@ from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 
@@ -29,9 +30,14 @@ from tournaments.serializers import (
     TournamentMatchUpdateSerializer,
     TournamentMatchContestantsSerializer,
     TournamentMatchListSerializer,
+    TournamentMatchContestSerializer,
 )
 from users.models import User
 from users.serializers import UserTeammatesSrializer
+
+
+class CustomPaginator(PageNumberPagination):
+    page_size = 10
 
 
 class TournamentBaseViewSet(ReadOnlyModelViewSet):
@@ -190,14 +196,64 @@ class TournamentMatchViewSet(
     mixins.UpdateModelMixin,
 ):
     def get_serializer_class(self):
+        if self.action == "screenshot_contest":
+            return TournamentMatchContestSerializer
         if self.action in ["update", "partial_update"]:
             return TournamentMatchUpdateSerializer
         return TournamentMatchSerializer
+
+    def get_serializer_context(self):
+        ctx = super().get_serializer_context()
+        if self.action == "retrieve":
+            ctx["match_obj"] = self.get_object()
+            ctx["user_team"] = [
+                x
+                for x in self.get_object().contestants.all()
+                if self.request.user.pk in x.team_members.values_list("user", flat=True)
+            ][
+                0
+            ]  # todo
+        return ctx
 
     def get_queryset(self):
         return TournamentMatch.objects.filter(
             contestants__team_members__user=self.request.user
         )
+
+    def update(self, request, *args, **kwargs):
+        obj = self.get_object()
+        serializer = self.get_serializer_class()
+        user_team = obj.contestants.filter(team_members__user=request.user).first()
+        if user_team.pk not in obj.result_submitted:
+            serializer_obj = serializer(data=request.data)
+            serializer_obj.is_valid(raise_exception=True)
+            if serializer.validated_data == "win":
+                obj.winner = user_team
+            else:
+                opposing_team = list(obj.contestants.all())
+                opposing_team.remove(user_team)
+                opposing_team = opposing_team[0]
+                obj.winner = opposing_team
+            obj.result_submitted.append(user_team.pk)
+            obj.save()
+        if obj.is_contested:
+            match_status = "contested"
+        elif obj.is_final:
+            match_status = (
+                "winner"
+                if self.request.user in obj.winner.team_members.all()
+                else "loser"
+            )
+        else:
+            match_status = "pending"
+        return Response({"status": match_status})
+
+    @action(methods=("patch", "put"), detail=True)
+    def screenshot_contest(self, request):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
 
 
 class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
@@ -228,11 +284,12 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 class ScheduleAPIView(ListAPIView):
 
     serializer_class = TournamentMatchListSerializer
+    pagination_class = CustomPaginator
 
     def get_queryset(self):
         return (
             TournamentMatch.objects.filter(
-                contestants__team_members__user=self.request.user,
+                # contestants__team_members__user=self.request.user,  # todo
                 match_start__gte=datetime.utcnow(),
             )
             .order_by("match_start")

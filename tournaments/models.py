@@ -6,6 +6,7 @@ from django.db import models
 from shortuuid import ShortUUID
 
 from playpro.abstract import TimestampAbstractModel
+from tournaments.validators import ImageSizeValidator
 from users.models import School, User
 from django.utils.translation import gettext_lazy as _
 
@@ -14,8 +15,8 @@ def tournament_upload_path():
     return f"tournaments/{uuid.uuid4()}"
 
 
-def result_upload_path():
-    return f"tournament_result/{uuid.uuid4()}"
+def result_upload_path(tournament_match, filename):
+    return f"tournament_result/{tournament_match.tournament.name}/{','.join(tournament_match.contestants.values_list('name', flat=True))}{uuid.uuid4()}"
 
 
 def create_match_chat():
@@ -26,18 +27,52 @@ class TournamentPlatform(TimestampAbstractModel, models.Model):
 
     name = models.CharField(max_length=255)
 
+    def __str__(self):
+        return self.name
+
+
+class TournamentGame(TimestampAbstractModel, models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class GamerTagChoice(TimestampAbstractModel, models.Model):
+    name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.name
+
+
+class TournamentGamePlatformMap(TimestampAbstractModel, models.Model):
+
+    platform = models.ForeignKey(TournamentPlatform, on_delete=models.PROTECT)
+    game = models.ForeignKey(TournamentGame, on_delete=models.PROTECT)
+    gamer_tag_types = models.ManyToManyField(GamerTagChoice)
+
+    def __str__(self):
+        return f"{self.platform.name} - {self.game.name}"
+
 
 class Tournament(TimestampAbstractModel, models.Model):
     registration_open_date = models.DateTimeField()
     registration_close_date = models.DateTimeField()
     registration_check_in_date = models.DateTimeField()
     name = models.CharField(max_length=255)
-    logo = models.ImageField(upload_to=tournament_upload_path())
+    logo = models.FileField(upload_to=tournament_upload_path())
+    tournament_img = models.ImageField(
+        upload_to=tournament_upload_path(), null=True, blank=True
+    )
     platforms = models.ManyToManyField(TournamentPlatform)
     team_size = models.PositiveIntegerField()
+    game = models.ForeignKey(TournamentGame, null=True, on_delete=models.PROTECT)
     playoff_array = ArrayField(
         ArrayField(models.IntegerField(), size=2), size=8, null=True, blank=True
     )
+
+    def __str__(self):
+        return f"{self.game} | {self.name} | {' '.join([str(x) for x in self.platforms.all()])}"
 
 
 class TournamentTeam(TimestampAbstractModel, models.Model):
@@ -105,7 +140,10 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
     is_contested = models.BooleanField(default=False)
     is_final = models.BooleanField(default=False)
     contest_screenshot = models.ImageField(
-        upload_to=result_upload_path(), blank=True, null=True
+        upload_to=result_upload_path,
+        blank=True,
+        null=True,
+        validators=[ImageSizeValidator(10)],
     )
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
     round_number = models.IntegerField(blank=True, null=True)
@@ -113,6 +151,13 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         default=create_match_chat,
         max_length=15,
     )
+    place_finished = models.IntegerField(blank=True, null=True)
+    result_submitted = ArrayField(
+        models.IntegerField(), size=2, blank=True, default=list
+    )
+
+    # def __str__(self):
+    #     return f'{self.tournament} | {" - ".join(self.contestants.values_list("name", flat=True))}'
 
     def _update_teams_score(self):
         self.winner.wins += 1
@@ -122,10 +167,17 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         loser.save()
 
     def save(self, *args, **kwargs):
-        if self.winner != self.initial_winner and self.initial_winner:
-            self.is_contested = True
-        elif self.winner == self.initial_winner and self.initial_winner:
-            self.is_final = True
-        if not self.initial_is_final and self.is_final:
-            self._update_teams_score()
-        super().save(*args, **kwargs)
+        if self.place_finished:
+            super().save(*args, **kwargs)
+        else:
+            if self.winner != self.initial_winner and self.initial_winner:
+                self.is_contested = True
+            elif self.winner == self.initial_winner and self.initial_winner:
+                self.is_final = True
+            if not self.initial_is_final and self.is_final:
+                self._update_teams_score()
+            super().save(*args, **kwargs)
+
+    def has_submitted_result(self, user):
+        user_team = self.contestants.filter(team_members__user=user).first()
+        return user_team.pk in self.result_submitted

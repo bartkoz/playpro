@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+import pytz
 from django.db.models import Sum, F
 from rest_framework import serializers
 
@@ -7,8 +10,15 @@ from tournaments.models import (
     TournamentTeamMember,
     TournamentGroup,
     TournamentMatch,
+    TournamentGamePlatformMap,
 )
 from django.utils.translation import gettext_lazy as _
+
+
+def get_gamer_tag_educated_guess(tournament):
+    return TournamentGamePlatformMap.objects.filter(
+        game=tournament.game, platform__in=tournament.platforms.all()
+    ).values_list("gamer_tag_types__name", flat=True)
 
 
 class TournamentListSerializer(serializers.ModelSerializer):
@@ -126,6 +136,7 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     avatar = serializers.URLField(source="user.avatar.image.url", read_only=True)
     invitation_accepted = serializers.SerializerMethodField()
     user_id = serializers.IntegerField(source="user.pk", read_only=True)
+    gamer_id = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentTeamMember
@@ -136,7 +147,9 @@ class TeamMemberSerializer(serializers.ModelSerializer):
             "is_captain",
             "avatar",
             "invitation_accepted",
+            "gamer_id",
         )
+        read_only_fields = fields
 
     def get_is_captain(self, obj):
         return obj.team.captain == obj.user
@@ -144,6 +157,22 @@ class TeamMemberSerializer(serializers.ModelSerializer):
     def get_invitation_accepted(self, obj):
         mapping = {None: "pending", False: "rejected", True: "accepted"}
         return mapping[obj.invitation_accepted]
+
+    def get_gamer_id(self, obj):
+        match = self.context.get("match_obj")
+        if match:
+            if (
+                match.match_start
+                and pytz.utc.localize(datetime.utcnow())
+                >= match.match_start - timedelta(minutes=30)
+                or obj.user.pk
+                in self.context["user_team"].team_members.values_list("user", flat=True)
+            ):
+                return {
+                    x: getattr(obj.user, x)
+                    for x in get_gamer_tag_educated_guess(obj.team.tournament)
+                }
+        return {x: "" for x in get_gamer_tag_educated_guess(obj.team.tournament)}
 
 
 class InvitationSerializer(serializers.ModelSerializer):
@@ -201,6 +230,7 @@ class TournamentGroupTeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentTeam
         fields = ("school", "name", "wins", "losses")
+        read_only_fields = fields
 
 
 class TournamentGroupSerializer(serializers.ModelSerializer):
@@ -210,6 +240,7 @@ class TournamentGroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentGroup
         fields = ("teams", "tournament")
+        read_only_fields = fields
 
     def get_teams(self, obj):
         return TournamentGroupTeamSerializer(
@@ -235,6 +266,7 @@ class TournamentMatchContestantsSerializer(serializers.ModelSerializer):
             "school",
             "max_team_members",
         )
+        read_only_fields = fields
 
 
 class TournamentMatchSerializer(serializers.ModelSerializer):
@@ -242,10 +274,29 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
     contestants = TournamentMatchContestantsSerializer(many=True)
     tournament = serializers.CharField(source="tournament.name")
     winner = serializers.SerializerMethodField()
+    tournament_img = serializers.SerializerMethodField()
+    result_submitted = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentMatch
-        fields = "__all__"
+        fields = [
+            "id",
+            "contestants",
+            "tournament",
+            "winner",
+            "tournament_img",
+            "result_submitted",
+            "stage",
+            "match_start",
+            "winner",
+            "is_contested",
+            "is_final",
+            "contest_screenshot",
+            "round_number",
+            "chat_channel",
+            "place_finished",
+        ]
+        read_only_fields = fields
 
     def get_winner(self, obj):
         if obj.is_contested:
@@ -253,12 +304,20 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
         elif obj.is_final:
             return (
                 "winner"
-                if self.context["request"].user
-                in self.context["instance"].winner.team_members
+                if self.context["request"].user in obj.winner.team_members.all()
                 else "loser"
             )
         else:
             return "pending"
+
+    def get_tournament_img(self, obj):
+        img = obj.tournament.tournament_img
+        if img:
+            return img.url
+
+    def get_result_submitted(self, obj):
+        user = self.context["request"].user
+        return obj.has_submitted_result(user)
 
 
 class TournamentMatchListSerializer(serializers.ModelSerializer):
@@ -270,12 +329,22 @@ class TournamentMatchListSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentMatch
         fields = ["contestants", "tournament", "match_start"]
+        read_only_fields = fields
 
     def get_contestants(self, obj):
         return obj.contestants.values_list("name", flat=True)
 
 
-class TournamentMatchUpdateSerializer(serializers.ModelSerializer):
+class TournamentMatchUpdateSerializer(serializers.Serializer):
+    winner = serializers.ChoiceField(
+        choices=(("win", "win"), ("loss", "loss")), required=False
+    )
+    place_finished = serializers.IntegerField(required=False)
+
+
+class TournamentMatchContestSerializer(serializers.ModelSerializer):
     class Meta:
         model = TournamentMatch
-        fields = ("winner",)
+        fields = [
+            "contest_screenshot",
+        ]

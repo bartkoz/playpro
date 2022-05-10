@@ -18,6 +18,10 @@ app.conf.beat_schedule = {
         "task": "playpro.celery.debug_task",
         "schedule": timedelta(minutes=1),
     },
+    "autocreate_matches": {
+        "task": "playpro.tournaments.create_tournament_groups_or_ladder",
+        "schedule": timedelta(minutes=5),
+    },
 }
 
 

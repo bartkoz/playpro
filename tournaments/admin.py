@@ -7,6 +7,9 @@ from tournaments.models import (
     TournamentTeamMember,
     TournamentGroup,
     TournamentMatch,
+    TournamentGame,
+    GamerTagChoice,
+    TournamentGamePlatformMap,
 )
 
 admin.site.register(TournamentPlatform)
@@ -15,3 +18,6 @@ admin.site.register(TournamentTeam)
 admin.site.register(TournamentTeamMember)
 admin.site.register(TournamentGroup)
 admin.site.register(TournamentMatch)
+admin.site.register(TournamentGame)
+admin.site.register(GamerTagChoice)
+admin.site.register(TournamentGamePlatformMap)
