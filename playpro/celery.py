@@ -19,7 +19,7 @@ app.conf.beat_schedule = {
         "schedule": timedelta(minutes=1),
     },
     "autocreate_matches": {
-        "task": "tournaments.create_tournament_groups_or_ladder",
+        "task": "tournaments.tasks.create_tournament_groups_or_ladder",
         "schedule": timedelta(minutes=5),
     },
 }
