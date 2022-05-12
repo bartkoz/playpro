@@ -296,6 +296,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
             "round_number",
             "chat_channel",
             "place_finished",
+            "match_logo"
         ]
         read_only_fields = fields
 
