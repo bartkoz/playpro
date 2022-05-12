@@ -344,7 +344,7 @@ class TournamentMatchUpdateSerializer(serializers.Serializer):
 
 class TournamentMatchContestSerializer(serializers.ModelSerializer):
 
-    contest_screenshot = serializers.FileField(required=True)
+    contest_screenshot = serializers.ImageField(required=True)
 
     class Meta:
         model = TournamentMatch
