@@ -143,7 +143,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         upload_to=result_upload_path,
         blank=True,
         null=True,
-        validators=[ImageSizeValidator(10)],
+        validators=[ImageSizeValidator(3)],
     )
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
     round_number = models.IntegerField(blank=True, null=True)
