@@ -343,6 +343,9 @@ class TournamentMatchUpdateSerializer(serializers.Serializer):
 
 
 class TournamentMatchContestSerializer(serializers.ModelSerializer):
+
+    contest_screenshot = serializers.FileField(required=True)
+
     class Meta:
         model = TournamentMatch
         fields = [

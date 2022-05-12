@@ -251,7 +251,7 @@ class TournamentMatchViewSet(
     @action(methods=("patch", "put"), detail=True)
     def screenshot_contest(self,  request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({"contest_screenshot": self.get_object().contest_screenshot.url}, status=status.HTTP_200_OK)
