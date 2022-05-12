@@ -70,6 +70,7 @@ class Tournament(TimestampAbstractModel, models.Model):
     playoff_array = ArrayField(
         ArrayField(models.IntegerField(), size=2), size=8, null=True, blank=True
     )
+    match_logo = models.FileField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.game} | {self.name} | {' '.join([str(x) for x in self.platforms.all()])}"

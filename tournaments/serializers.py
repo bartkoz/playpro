@@ -276,6 +276,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
     winner = serializers.SerializerMethodField()
     tournament_img = serializers.SerializerMethodField()
     result_submitted = serializers.SerializerMethodField()
+    match_logo = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentMatch
@@ -318,6 +319,11 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
     def get_result_submitted(self, obj):
         user = self.context["request"].user
         return obj.has_submitted_result(user)
+
+    def get_match_logo(self, obj):
+        logo = obj.tournament.match_logo
+        if logo:
+            return logo.url
 
 
 class TournamentMatchListSerializer(serializers.ModelSerializer):
