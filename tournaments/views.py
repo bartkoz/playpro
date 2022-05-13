@@ -274,7 +274,7 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
     def groups(self, request, *args, **kwargs):
         return Response(
             TournamentGroupSerializer(
-                self.get_object().tournament_groups, many=True
+                self.get_object().tournament_groups, many=True, context=self.get_serializer_context()
             ).data
         )
 
@@ -286,6 +286,7 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
                 .tournament_matches.filter(stage=TournamentMatch.StageChoices.PLAYOFF)
                 .order_by("round_number"),
                 many=True,
+                context=self.get_serializer_context()
             ).data
         )
 

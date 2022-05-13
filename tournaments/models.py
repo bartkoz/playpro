@@ -184,4 +184,4 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
 
     def has_submitted_result(self, user):
         user_team = self.contestants.filter(team_members__user=user).first()
-        return user_team.pk in self.result_submitted
+        return getattr(user_team, "pk", None) in self.result_submitted
