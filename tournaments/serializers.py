@@ -298,7 +298,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
             "chat_channel",
             "place_finished",
             "match_logo",
-            "platforms"
+            "platforms",
         ]
         read_only_fields = fields
 
@@ -363,3 +363,10 @@ class TournamentMatchContestSerializer(serializers.ModelSerializer):
         fields = [
             "contest_screenshot",
         ]
+
+
+class MatchesPlayoffSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TournamentMatch
+        fields = ["name", "round_number"]
+        read_only_fields = fields

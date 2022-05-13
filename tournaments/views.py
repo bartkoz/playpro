@@ -31,6 +31,7 @@ from tournaments.serializers import (
     TournamentMatchContestantsSerializer,
     TournamentMatchListSerializer,
     TournamentMatchContestSerializer,
+    MatchesPlayoffSerializer,
 )
 from users.models import User
 from users.serializers import UserTeammatesSrializer
@@ -262,7 +263,9 @@ class TournamentMatchViewSet(
 
 class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 
-    queryset = Tournament.objects.all().prefetch_related("tournament_groups", "tournament_groups__teams__team_members__user")
+    queryset = Tournament.objects.all().prefetch_related(
+        "tournament_groups", "tournament_groups__teams__team_members__user"
+    )
     serializer_class = TournamentListSerializer
 
     def get_serializer_context(self):
@@ -274,19 +277,21 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
     def groups(self, request, *args, **kwargs):
         return Response(
             TournamentGroupSerializer(
-                self.get_object().tournament_groups, many=True, context=self.get_serializer_context()
+                self.get_object().tournament_groups,
+                many=True,
+                context=self.get_serializer_context(),
             ).data
         )
 
     @action(methods=("get",), detail=True)
     def playoff(self, request, *args, **kwargs):
         return Response(
-            TournamentMatchSerializer(
+            MatchesPlayoffSerializer(
                 self.get_object()
                 .tournament_matches.filter(stage=TournamentMatch.StageChoices.PLAYOFF)
                 .order_by("round_number"),
                 many=True,
-                context=self.get_serializer_context()
+                context=self.get_serializer_context(),
             ).data
         )
 
