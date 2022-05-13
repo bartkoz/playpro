@@ -265,6 +265,11 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
     queryset = Tournament.objects.all()
     serializer_class = TournamentListSerializer
 
+    def get_serializer_context(self):
+        ctx = super().get_serializer_context()
+        ctx["request"] = self.request
+        return ctx
+
     @action(methods=("get",), detail=True)
     def groups(self, request, *args, **kwargs):
         return Response(
