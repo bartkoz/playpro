@@ -228,7 +228,7 @@ class TournamentMatchViewSet(
         if user_team.pk not in obj.result_submitted:
             serializer_obj = serializer(data=request.data)
             serializer_obj.is_valid(raise_exception=True)
-            if serializer.validated_data == "win":
+            if serializer_obj.validated_data.get('winner') == "win":
                 obj.winner = user_team
             else:
                 opposing_team = list(obj.contestants.all())
