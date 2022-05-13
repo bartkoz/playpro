@@ -277,6 +277,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
     tournament_img = serializers.SerializerMethodField()
     result_submitted = serializers.SerializerMethodField()
     match_logo = serializers.SerializerMethodField()
+    platforms = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentMatch
@@ -296,7 +297,8 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
             "round_number",
             "chat_channel",
             "place_finished",
-            "match_logo"
+            "match_logo",
+            "platforms"
         ]
         read_only_fields = fields
 
@@ -325,6 +327,9 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
         logo = obj.tournament.match_logo
         if logo:
             return logo.url
+
+    def get_platforms(self, obj):
+        return obj.tournament.platforms.values_list("name", flat=True)
 
 
 class TournamentMatchListSerializer(serializers.ModelSerializer):

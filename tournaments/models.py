@@ -104,6 +104,9 @@ class TournamentTeam(TimestampAbstractModel, models.Model):
     def is_complete(self):
         return self.team_members.count() == self.tournament.team_size
 
+    def __str__(self):
+        return self.name
+
 
 class TournamentTeamMember(TimestampAbstractModel, models.Model):
     invitation_accepted = models.BooleanField(null=True)
@@ -173,7 +176,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         else:
             if self.winner != self.initial_winner and self.initial_winner:
                 self.is_contested = True
-            elif self.winner == self.initial_winner and self.initial_winner:
+            elif self.winner == self.initial_winner and self.initial_winner and not self.is_contested:
                 self.is_final = True
             if not self.initial_is_final and self.is_final:
                 self._update_teams_score()
