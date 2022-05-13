@@ -79,7 +79,7 @@ class Tournament(TimestampAbstractModel, models.Model):
 class TournamentTeam(TimestampAbstractModel, models.Model):
 
     school = models.ForeignKey(School, on_delete=models.PROTECT)
-    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
+    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT, related_name="tournament_teams")
     name = models.CharField(max_length=255)
     captain = models.ForeignKey(User, on_delete=models.PROTECT)
     group_score = models.IntegerField(default=0)

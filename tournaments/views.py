@@ -262,7 +262,7 @@ class TournamentMatchViewSet(
 
 class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 
-    queryset = Tournament.objects.all()
+    queryset = Tournament.objects.all().prefetch_related("tournament_groups", "tournament_groups__teams__team_members__user")
     serializer_class = TournamentListSerializer
 
     def get_serializer_context(self):
