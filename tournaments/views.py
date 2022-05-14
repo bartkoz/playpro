@@ -231,9 +231,12 @@ class TournamentMatchViewSet(
         return ctx
 
     def get_queryset(self):
-        return TournamentMatch.objects.filter(
-            contestants__team_members__user=self.request.user
-        ).order_by("match_start")
+        qs = TournamentMatch.objects.filter(
+                contestants__team_members__user=self.request.user
+            ).order_by("match_start")
+        if self.action == "list":
+            return qs[:4]
+        return qs
 
     def update(self, request, *args, **kwargs):
         obj = self.get_object()
