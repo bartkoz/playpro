@@ -307,7 +307,7 @@ class TournamentMatchSerializer(serializers.ModelSerializer):
         if obj.is_contested:
             return "contested"
         elif obj.is_final:
-            return random.choice(["winner", "loser"])
+            # return random.choice(["winner", "loser"])
             return (
                 "winner"
                 if self.context["request"].user in obj.winner.team_members.all()
