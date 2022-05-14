@@ -219,7 +219,7 @@ class TournamentMatchViewSet(
     def get_queryset(self):
         return TournamentMatch.objects.filter(
             contestants__team_members__user=self.request.user
-        )
+        ).order_by("match_start")[:4]
 
     def update(self, request, *args, **kwargs):
         obj = self.get_object()
