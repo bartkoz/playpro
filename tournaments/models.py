@@ -70,6 +70,7 @@ class Tournament(TimestampAbstractModel, models.Model):
     playoff_array = ArrayField(
         ArrayField(models.IntegerField(), size=2), size=8, null=True, blank=True
     )
+    match_logo = models.FileField(blank=True, null=True)
 
     def __str__(self):
         return f"{self.game} | {self.name} | {' '.join([str(x) for x in self.platforms.all()])}"
@@ -78,7 +79,9 @@ class Tournament(TimestampAbstractModel, models.Model):
 class TournamentTeam(TimestampAbstractModel, models.Model):
 
     school = models.ForeignKey(School, on_delete=models.PROTECT)
-    tournament = models.ForeignKey(Tournament, on_delete=models.PROTECT)
+    tournament = models.ForeignKey(
+        Tournament, on_delete=models.PROTECT, related_name="tournament_teams"
+    )
     name = models.CharField(max_length=255)
     captain = models.ForeignKey(User, on_delete=models.PROTECT)
     group_score = models.IntegerField(default=0)
@@ -102,6 +105,9 @@ class TournamentTeam(TimestampAbstractModel, models.Model):
     @property
     def is_complete(self):
         return self.team_members.count() == self.tournament.team_size
+
+    def __str__(self):
+        return self.name
 
 
 class TournamentTeamMember(TimestampAbstractModel, models.Model):
@@ -143,7 +149,7 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         upload_to=result_upload_path,
         blank=True,
         null=True,
-        validators=[ImageSizeValidator(10)],
+        validators=[ImageSizeValidator(3)],
     )
     contestants = models.ManyToManyField(TournamentTeam, related_name="matches")
     round_number = models.IntegerField(blank=True, null=True)
@@ -172,7 +178,11 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
         else:
             if self.winner != self.initial_winner and self.initial_winner:
                 self.is_contested = True
-            elif self.winner == self.initial_winner and self.initial_winner:
+            elif (
+                self.winner == self.initial_winner
+                and self.initial_winner
+                and not self.is_contested
+            ):
                 self.is_final = True
             if not self.initial_is_final and self.is_final:
                 self._update_teams_score()
@@ -180,4 +190,4 @@ class TournamentMatch(TimestampAbstractModel, models.Model):
 
     def has_submitted_result(self, user):
         user_team = self.contestants.filter(team_members__user=user).first()
-        return user_team.pk in self.result_submitted
+        return getattr(user_team, "pk", None) in self.result_submitted

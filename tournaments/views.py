@@ -31,6 +31,7 @@ from tournaments.serializers import (
     TournamentMatchContestantsSerializer,
     TournamentMatchListSerializer,
     TournamentMatchContestSerializer,
+    MatchesPlayoffSerializer,
 )
 from users.models import User
 from users.serializers import UserTeammatesSrializer
@@ -227,7 +228,7 @@ class TournamentMatchViewSet(
         if user_team.pk not in obj.result_submitted:
             serializer_obj = serializer(data=request.data)
             serializer_obj.is_valid(raise_exception=True)
-            if serializer.validated_data == "win":
+            if serializer_obj.validated_data.get('winner') == "win":
                 obj.winner = user_team
             else:
                 opposing_team = list(obj.contestants.all())
@@ -249,35 +250,48 @@ class TournamentMatchViewSet(
         return Response({"status": match_status})
 
     @action(methods=("patch", "put"), detail=True)
-    def screenshot_contest(self,  request, *args, **kwargs):
+    def screenshot_contest(self, request, *args, **kwargs):
         instance = self.get_object()
-        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
-        return Response(status=status.HTTP_200_OK)
+        return Response(
+            {"contest_screenshot": self.get_object().contest_screenshot.url},
+            status=status.HTTP_200_OK,
+        )
 
 
 class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 
-    queryset = Tournament.objects.all()
+    queryset = Tournament.objects.all().prefetch_related(
+        "tournament_groups", "tournament_groups__teams__team_members__user"
+    )
     serializer_class = TournamentListSerializer
+
+    def get_serializer_context(self):
+        ctx = super().get_serializer_context()
+        ctx["request"] = self.request
+        return ctx
 
     @action(methods=("get",), detail=True)
     def groups(self, request, *args, **kwargs):
         return Response(
             TournamentGroupSerializer(
-                self.get_object().tournament_groups, many=True
+                self.get_object().tournament_groups,
+                many=True,
+                context=self.get_serializer_context(),
             ).data
         )
 
     @action(methods=("get",), detail=True)
     def playoff(self, request, *args, **kwargs):
         return Response(
-            TournamentMatchSerializer(
+            MatchesPlayoffSerializer(
                 self.get_object()
                 .tournament_matches.filter(stage=TournamentMatch.StageChoices.PLAYOFF)
                 .order_by("round_number"),
                 many=True,
+                context=self.get_serializer_context(),
             ).data
         )
 
