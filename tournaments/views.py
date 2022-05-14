@@ -1,5 +1,7 @@
+import string
 from datetime import datetime
 
+from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -114,6 +116,18 @@ class TeamViewSet(
                 ).data
             }
         )
+
+    # @action(methods=("post",), detail=False)
+    # def available_teammates(self, request):
+    #     tournament = TournamentTeam.objects.get(pk=request.data.get("team_id"))
+    #     return Response(
+    #         {
+    #             "users": UserTeammatesSrializer(
+    #                 User.objects.annotate(is_in_team=Exists(TournamentTeamMember.objects.filter(team__tournament=tournament, user=OuterRef('pk')))).filter(is_in_team=False)
+    #                 many=True,
+    #             ).data
+    #         }
+    #     )
 
     @action(methods=("post", "get"), detail=True)
     def manage_team(self, request, *args, **kwargs):
@@ -265,13 +279,21 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 
     queryset = Tournament.objects.all().prefetch_related(
         "tournament_groups", "tournament_groups__teams__team_members__user"
-    )
+    ).order_by('pk')
     serializer_class = TournamentListSerializer
 
     def get_serializer_context(self):
         ctx = super().get_serializer_context()
         ctx["request"] = self.request
+        if self.action in ["groups", "playoff"]:
+            ctx["groups_names"] = self._get_groups_names(count=self.get_object().tournament_groups.count())
         return ctx
+
+    def _get_groups_names(self, count):
+        if count > 26:
+            additional_count = count-26
+            return list(string.ascii_uppercase) + [x*2 for x in string.ascii_uppercase][:additional_count]
+        return list(string.ascii_uppercase)[:count]
 
     @action(methods=("get",), detail=True)
     def groups(self, request, *args, **kwargs):

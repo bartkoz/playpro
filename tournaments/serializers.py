@@ -1,5 +1,5 @@
+import logging
 from datetime import datetime, timedelta
-import random
 
 import pytz
 from django.db.models import Sum, F
@@ -14,6 +14,8 @@ from tournaments.models import (
     TournamentGamePlatformMap,
 )
 from django.utils.translation import gettext_lazy as _
+
+logger = logging.getLogger(__name__)
 
 
 def get_gamer_tag_educated_guess(tournament):
@@ -237,10 +239,11 @@ class TournamentGroupTeamSerializer(serializers.ModelSerializer):
 class TournamentGroupSerializer(serializers.ModelSerializer):
 
     teams = serializers.SerializerMethodField()
+    group_letter = serializers.SerializerMethodField()
 
     class Meta:
         model = TournamentGroup
-        fields = ("teams", "tournament")
+        fields = ("teams", "tournament", "group_letter")
         read_only_fields = fields
 
     def get_teams(self, obj):
@@ -248,6 +251,14 @@ class TournamentGroupSerializer(serializers.ModelSerializer):
             obj.teams.annotate(result=Sum(F("wins") - F("losses"))).order_by("-result"),
             many=True,
         ).data
+
+    def get_group_letter(self, obj):
+        try:
+            return self.context['groups_names'].pop(0)
+        except IndexError:
+            logger.error("Group names are too short!")
+            return "FallbackName"
+
 
 
 class TournamentMatchContestantsSerializer(serializers.ModelSerializer):
