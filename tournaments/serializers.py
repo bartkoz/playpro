@@ -254,11 +254,10 @@ class TournamentGroupSerializer(serializers.ModelSerializer):
 
     def get_group_letter(self, obj):
         try:
-            return self.context['groups_names'].pop(0)
+            return self.context["groups_names"].pop(0)
         except IndexError:
             logger.error("Group names are too short!")
             return "FallbackName"
-
 
 
 class TournamentMatchContestantsSerializer(serializers.ModelSerializer):

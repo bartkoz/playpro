@@ -106,28 +106,29 @@ class TeamViewSet(
             return True
         return False
 
-    @action(methods=("get",), detail=False)
-    def available_teammates(self, request):
+    @action(methods=("get",), detail=True)
+    def available_teammates(self, request, *args, **kwargs):
+        try:
+            tournament = TournamentTeam.objects.get(pk=kwargs.get("pk")).tournament
+        except TournamentTeam.DoesNotExist:
+            return Response(
+                {"errpr": "Team with given id does not exist!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return Response(
             {
                 "users": UserTeammatesSrializer(
-                    User.objects.filter(school_id=request.user.school_id),
+                    User.objects.annotate(
+                        has_team=Exists(
+                            TournamentTeamMember.objects.filter(
+                                team__tournament=tournament, user=OuterRef("pk")
+                            )
+                        )
+                    ).filter(has_team=False),
                     many=True,
                 ).data
             }
         )
-
-    # @action(methods=("post",), detail=False)
-    # def available_teammates(self, request):
-    #     tournament = TournamentTeam.objects.get(pk=request.data.get("team_id"))
-    #     return Response(
-    #         {
-    #             "users": UserTeammatesSrializer(
-    #                 User.objects.annotate(is_in_team=Exists(TournamentTeamMember.objects.filter(team__tournament=tournament, user=OuterRef('pk')))).filter(is_in_team=False)
-    #                 many=True,
-    #             ).data
-    #         }
-    #     )
 
     @action(methods=("post", "get"), detail=True)
     def manage_team(self, request, *args, **kwargs):
@@ -232,8 +233,8 @@ class TournamentMatchViewSet(
 
     def get_queryset(self):
         qs = TournamentMatch.objects.filter(
-                contestants__team_members__user=self.request.user
-            ).order_by("match_start")
+            contestants__team_members__user=self.request.user
+        ).order_by("match_start")
         if self.action == "list":
             return qs[:4]
         return qs
@@ -245,7 +246,7 @@ class TournamentMatchViewSet(
         if user_team.pk not in obj.result_submitted:
             serializer_obj = serializer(data=request.data)
             serializer_obj.is_valid(raise_exception=True)
-            if serializer_obj.validated_data.get('winner') == "win":
+            if serializer_obj.validated_data.get("winner") == "win":
                 obj.winner = user_team
             else:
                 opposing_team = list(obj.contestants.all())
@@ -280,22 +281,31 @@ class TournamentMatchViewSet(
 
 class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 
-    queryset = Tournament.objects.all().prefetch_related(
-        "tournament_groups", "tournament_groups__teams__team_members__user"
-    ).order_by('pk')
+    queryset = (
+        Tournament.objects.all()
+        .prefetch_related(
+            "tournament_groups", "tournament_groups__teams__team_members__user"
+        )
+        .order_by("pk")
+    )
     serializer_class = TournamentListSerializer
 
     def get_serializer_context(self):
         ctx = super().get_serializer_context()
         ctx["request"] = self.request
         if self.action in ["groups", "playoff"]:
-            ctx["groups_names"] = self._get_groups_names(count=self.get_object().tournament_groups.count())
+            ctx["groups_names"] = self._get_groups_names(
+                count=self.get_object().tournament_groups.count()
+            )
         return ctx
 
     def _get_groups_names(self, count):
         if count > 26:
-            additional_count = count-26
-            return list(string.ascii_uppercase) + [x*2 for x in string.ascii_uppercase][:additional_count]
+            additional_count = count - 26
+            return (
+                list(string.ascii_uppercase)
+                + [x * 2 for x in string.ascii_uppercase][:additional_count]
+            )
         return list(string.ascii_uppercase)[:count]
 
     @action(methods=("get",), detail=True)

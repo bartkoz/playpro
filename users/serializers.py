@@ -71,7 +71,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             "ea_games_id",
             "ps_network_id",
             "riot_id",
-            "xbox_id"
+            "xbox_id",
         )
         model = User
 
