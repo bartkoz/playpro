@@ -131,5 +131,5 @@ class SchoolSerializer(serializers.ModelSerializer):
 
 class AvatarSerializer(serializers.ModelSerializer):
     class Meta:
-        fields = ("image",)
+        fields = ("image", "id")
         model = UserAvatar
