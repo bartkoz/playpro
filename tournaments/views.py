@@ -124,7 +124,7 @@ class TeamViewSet(
                                 team__tournament=tournament, user=OuterRef("pk")
                             )
                         )
-                    ).filter(has_team=False),
+                    ).filter(has_team=False, school_id=request.user.school_id),
                     many=True,
                 ).data
             }
