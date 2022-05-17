@@ -78,7 +78,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 
 class ProfileSerializer(serializers.ModelSerializer):
 
-    avatar = serializers.URLField(source="avatar.image.url")
+    avatar = serializers.SerializerMethodField()
     school_name = serializers.CharField(source="school.name")
 
     class Meta:
@@ -101,6 +101,12 @@ class ProfileSerializer(serializers.ModelSerializer):
             "id",
         )
         model = User
+
+    def get_avatar(self, obj):
+        try:
+            return obj.avatar.image.url
+        except AttributeError:
+            return
 
 
 class ProfilePasswordUpdateSerializer(serializers.Serializer):
