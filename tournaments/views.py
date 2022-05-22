@@ -1,5 +1,7 @@
+import string
 from datetime import datetime
 
+from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status
 from rest_framework.decorators import action
@@ -104,12 +106,25 @@ class TeamViewSet(
             return True
         return False
 
-    @action(methods=("get",), detail=False)
-    def available_teammates(self, request):
+    @action(methods=("get",), detail=True)
+    def available_teammates(self, request, *args, **kwargs):
+        try:
+            tournament = TournamentTeam.objects.get(pk=kwargs.get("pk")).tournament
+        except TournamentTeam.DoesNotExist:
+            return Response(
+                {"errpr": "Team with given id does not exist!"},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         return Response(
             {
                 "users": UserTeammatesSrializer(
-                    User.objects.filter(school_id=request.user.school_id),
+                    User.objects.annotate(
+                        has_team=Exists(
+                            TournamentTeamMember.objects.filter(
+                                team__tournament=tournament, user=OuterRef("pk")
+                            )
+                        )
+                    ).filter(has_team=False, school_id=request.user.school_id),
                     many=True,
                 ).data
             }
@@ -217,9 +232,12 @@ class TournamentMatchViewSet(
         return ctx
 
     def get_queryset(self):
-        return TournamentMatch.objects.filter(
+        qs = TournamentMatch.objects.filter(
             contestants__team_members__user=self.request.user
-        )
+        ).order_by("match_start")
+        if self.action == "list":
+            return qs[:4]
+        return qs
 
     def update(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -228,7 +246,7 @@ class TournamentMatchViewSet(
         if user_team.pk not in obj.result_submitted:
             serializer_obj = serializer(data=request.data)
             serializer_obj.is_valid(raise_exception=True)
-            if serializer_obj.validated_data.get('winner') == "win":
+            if serializer_obj.validated_data.get("winner") == "win":
                 obj.winner = user_team
             else:
                 opposing_team = list(obj.contestants.all())
@@ -263,15 +281,32 @@ class TournamentMatchViewSet(
 
 class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
 
-    queryset = Tournament.objects.all().prefetch_related(
-        "tournament_groups", "tournament_groups__teams__team_members__user"
+    queryset = (
+        Tournament.objects.all()
+        .prefetch_related(
+            "tournament_groups", "tournament_groups__teams__team_members__user"
+        )
+        .order_by("pk")
     )
     serializer_class = TournamentListSerializer
 
     def get_serializer_context(self):
         ctx = super().get_serializer_context()
         ctx["request"] = self.request
+        if self.action in ["groups", "playoff"]:
+            ctx["groups_names"] = self._get_groups_names(
+                count=self.get_object().tournament_groups.count()
+            )
         return ctx
+
+    def _get_groups_names(self, count):
+        if count > 26:
+            additional_count = count - 26
+            return (
+                list(string.ascii_uppercase)
+                + [x * 2 for x in string.ascii_uppercase][:additional_count]
+            )
+        return list(string.ascii_uppercase)[:count]
 
     @action(methods=("get",), detail=True)
     def groups(self, request, *args, **kwargs):
