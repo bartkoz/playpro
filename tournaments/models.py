@@ -1,7 +1,12 @@
+import sys
 import uuid
+from io import BytesIO
 
+from PIL import Image
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
+from django.core.files.storage import default_storage
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.db import models
 from shortuuid import ShortUUID
 
@@ -56,6 +61,13 @@ class TournamentGamePlatformMap(TimestampAbstractModel, models.Model):
 
 
 class Tournament(TimestampAbstractModel, models.Model):
+    OG_IMAGE_WIDTH = 960
+    OG_IMAGE_HEIGHT = 540
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.initial_logo = self.logo
+
     registration_open_date = models.DateTimeField()
     registration_close_date = models.DateTimeField()
     registration_check_in_date = models.DateTimeField()
@@ -74,6 +86,29 @@ class Tournament(TimestampAbstractModel, models.Model):
 
     def __str__(self):
         return f"{self.game} | {self.name} | {' '.join([str(x) for x in self.platforms.all()])}"
+
+    def save(self, *args, **kwargs):
+        if not self.logo or self.logo != self.initial_logo:
+            unique_name = str(uuid.uuid4())
+            filename = f"{unique_name}.jpg"
+            im = Image.open(self.logo)
+            im.load()
+            original_image = BytesIO()
+            im.save(original_image, format="JPEG", quality=85)
+            default_storage.save("pokazrybe-original/" + filename, original_image)
+            output = BytesIO()
+            im = im.resize((self.OG_IMAGE_WIDTH, self.OG_IMAGE_HEIGHT))
+            im.save(output, format="JPEG", quality=85)
+            output.seek(0)
+            self.image = InMemoryUploadedFile(
+                output,
+                "ImageField",
+                f"{unique_name}.jpg",
+                "image/jpeg",
+                sys.getsizeof(output),
+                None,
+            )
+        super().save(*args, **kwargs)
 
 
 class TournamentTeam(TimestampAbstractModel, models.Model):
