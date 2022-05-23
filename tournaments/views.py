@@ -324,7 +324,7 @@ class TournamentRankingsViewSet(GenericViewSet, mixins.ListModelMixin):
             MatchesPlayoffSerializer(
                 self.get_object()
                 .tournament_matches.filter(stage=TournamentMatch.StageChoices.PLAYOFF)
-                .order_by("round_number"),
+                .order_by("round_number", "pk"),
                 many=True,
                 context=self.get_serializer_context(),
             ).data
