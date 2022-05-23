@@ -384,7 +384,7 @@ class MatchesPlayoffSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TournamentMatch
-        fields = ["round_number", "contestants", "winner"]
+        fields = ["round_number", "contestants", "winner", "id"]
         read_only_fields = fields
 
     def get_contestants(self, obj):
