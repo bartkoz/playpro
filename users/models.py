@@ -87,7 +87,7 @@ class User(TimestampAbstractModel, AbstractBaseUser, PermissionsMixin):
     school_email = models.EmailField()
     date_joined = models.DateTimeField(_("date joined"), default=timezone.now)
     avatar = models.ForeignKey(UserAvatar, on_delete=models.SET_NULL, null=True)
-    nickname = models.CharField(max_length=510)
+    nickname = models.CharField(max_length=20)
     epic_games_id = models.CharField(max_length=255, blank=True, default="")
     ea_games_id = models.CharField(max_length=255, blank=True, default="")
     ps_network_id = models.CharField(max_length=255, blank=True, default="")
