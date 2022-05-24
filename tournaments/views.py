@@ -352,7 +352,7 @@ class ScheduleAPIView(ListAPIView):
 class TournamentStageAPIView(APIView):
     def get(self, request, *args, **kwargs):
         tournament = get_object_or_404(Tournament, pk=kwargs["pk"])
-        if tournament.registration_close_date < timezone.now():
+        if tournament.registration_close_date > timezone.now():
             tournament_status = "registration_open"
         elif (
             tournament.tournament_matches.filter(
