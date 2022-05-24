@@ -3,12 +3,14 @@ from datetime import datetime
 
 from django.db.models import Exists, OuterRef
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import mixins, status
 from rest_framework.decorators import action
 from rest_framework.generics import ListAPIView
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin, UpdateModelMixin
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
+from rest_framework.views import APIView
 from rest_framework.viewsets import ReadOnlyModelViewSet, GenericViewSet
 
 from notifications.receivers import notify_captain_invitation_denied
@@ -339,9 +341,26 @@ class ScheduleAPIView(ListAPIView):
     def get_queryset(self):
         return (
             TournamentMatch.objects.filter(
-                # contestants__team_members__user=self.request.user,  # todo
+                contestants__team_members__user=self.request.user,  # todo
                 match_start__gte=datetime.utcnow(),
             )
             .order_by("match_start")
             .distinct()
         )
+
+
+class TournamentStageAPIView(APIView):
+    def get(self, request, *args, **kwargs):
+        tournament = get_object_or_404(Tournament, pk=kwargs["pk"])
+        if tournament.registration_close_date < timezone.now():
+            tournament_status = "registration_open"
+        elif (
+            tournament.tournament_matches.filter(
+                stage=TournamentMatch.StageChoices.PLAYOFF
+            ).count()
+            > 0
+        ):
+            tournament_status = "playoff"
+        else:
+            tournament_status = "groups"
+        return Response({"status": tournament_status})
