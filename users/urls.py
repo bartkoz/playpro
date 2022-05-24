@@ -21,7 +21,9 @@ urlpatterns = [
     path("token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
     path("token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
     path("password-reset/", UserPasswordResetLinkGenerateAPIView.as_view()),
-    path("password-reset/<str:uidb64>/<str:token>/", UserPasswordResetAPIView.as_view()),
+    path(
+        "password-reset/<str:uidb64>/<str:token>/", UserPasswordResetAPIView.as_view()
+    ),
     path("available-avatars/", AvailableAvatarsAPIView.as_view()),
     path("profile/", ProfileAPIView.as_view()),
     path("user-teams/", UserTeamsAPIView.as_view()),

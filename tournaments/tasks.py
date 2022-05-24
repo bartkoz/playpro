@@ -82,3 +82,46 @@ def create_tournament_groups_or_ladder():
                     )
                     for team in team_pair:
                         obj.contestants.add(team)
+
+
+@app.task()
+def create_tournament_ladder_next_stages():
+    tournaments = Tournament.objects.annotate(
+        groups_count=Count("tournament_groups")
+    ).filter(groups_count__gt=0)
+    for tournament in tournaments:
+        playoffs_existing = tournament.tournament_matches.filter(
+            stage=TournamentMatch.StageChoices.PLAYOFF
+        ).count()
+        playoffs_finished = tournament.tournament_matches.filter(
+            stage=TournamentMatch.StageChoices.PLAYOFF, winner__isnull=False
+        ).count()
+        if playoffs_existing == playoffs_finished:
+            current_round_number = (
+                tournament.tournament_matches.filter(
+                    stage=TournamentMatch.StageChoices.PLAYOFF
+                )
+                .order_by("-round_number")
+                .first()
+                .round_number
+            )
+            if current_round_number < 4:
+                winners_ids = (
+                    tournament.tournament_matches.filter(
+                        stage=TournamentMatch.StageChoices.PLAYOFF,
+                        round_number=current_round_number,
+                    )
+                    .order_by("pk")
+                    .values_list("winner", flat=True)
+                )
+                winners = TournamentTeam.objects.filter(pk__in=winners_ids)
+                pairs = [winners[x : x + 2] for x in range(0, len(winners), 2)]
+                for pair in pairs:
+                    tm = TournamentMatch.objects.create(
+                        tournament=tournament,
+                        stage=TournamentMatch.StageChoices.PLAYOFF,
+                        round_number=current_round_number + 1,
+                    )
+                    for elem in pair:
+                        tm.contestants.add(elem)
+                    tm.save()
