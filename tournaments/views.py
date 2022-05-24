@@ -341,7 +341,7 @@ class ScheduleAPIView(ListAPIView):
     def get_queryset(self):
         return (
             TournamentMatch.objects.filter(
-                contestants__team_members__user=self.request.user,  # todo
+                # contestants__team_members__user=self.request.user,  # todo
                 match_start__gte=datetime.utcnow(),
             )
             .order_by("match_start")
