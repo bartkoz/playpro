@@ -380,10 +380,11 @@ class TournamentMatchContestSerializer(serializers.ModelSerializer):
 class MatchesPlayoffSerializer(serializers.ModelSerializer):
 
     contestants = serializers.SerializerMethodField()
+    winner = serializers.CharField(source="winner.name", default=None)
 
     class Meta:
         model = TournamentMatch
-        fields = ["round_number", "contestants"]
+        fields = ["round_number", "contestants", "winner", "id"]
         read_only_fields = fields
 
     def get_contestants(self, obj):

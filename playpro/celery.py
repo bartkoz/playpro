@@ -22,6 +22,10 @@ app.conf.beat_schedule = {
         "task": "tournaments.tasks.create_tournament_groups_or_ladder",
         "schedule": timedelta(minutes=5),
     },
+    "autocreate_matches_playoff_stage": {
+        "task": "tournaments.tasks.create_tournament_ladder_next_stages",
+        "schedule": timedelta(minutes=1),
+    },
 }
 
 
