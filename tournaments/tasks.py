@@ -52,7 +52,7 @@ def create_tournament_groups_or_ladder():
         team_size = tournament.team_size
         qs = TournamentTeam.objects.annotate(team_size=Count("team_members")).filter(
             tournament_id=tournament, team_size=team_size
-        )
+        ).values_list("pk")
         randomized_qs = list(qs)
         random.shuffle(randomized_qs)
         if qs.count() <= 16:
