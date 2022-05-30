@@ -85,6 +85,7 @@ def create_tournament_groups_or_ladder():
                     )
                     for team in team_pair:
                         obj.contestants.add(team)
+                        obj.save()
 
 
 @app.task()
