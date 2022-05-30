@@ -60,7 +60,7 @@ def create_tournament_groups_or_ladder():
             playoff_chunks = []
             for chunk in chunks:
                 playoff_chunks.append([x.pk for x in chunk])
-            tournament.playoff_array = chunks
+            tournament.playoff_array = playoff_chunks
             tournament.save()
             for chunk in chunks:
                 obj = TournamentMatch.objects.create(
