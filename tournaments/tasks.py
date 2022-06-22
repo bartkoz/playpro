@@ -48,16 +48,19 @@ def create_tournament_groups_or_ladder():
 
     for tournament in Tournament.objects.annotate(
         groups_count=Count("tournament_groups")
-    ).filter(registration_close_date__gte=timezone.now(), groups_count=0):
+    ).filter(registration_close_date__lte=timezone.now(), groups_count=0):
         team_size = tournament.team_size
         qs = TournamentTeam.objects.annotate(team_size=Count("team_members")).filter(
             tournament_id=tournament, team_size=team_size
         )
         randomized_qs = list(qs)
         random.shuffle(randomized_qs)
-        if qs.count() <= 16:
+        if qs.count() <= 16 and not tournament.playoff_array:
             chunks = build_chunks(2, randomized_qs)
-            tournament.playoff_array = chunks
+            playoff_chunks = []
+            for chunk in chunks:
+                playoff_chunks.append([x.pk for x in chunk])
+            tournament.playoff_array = playoff_chunks
             tournament.save()
             for chunk in chunks:
                 obj = TournamentMatch.objects.create(
@@ -66,7 +69,7 @@ def create_tournament_groups_or_ladder():
                     round_number=1,
                 )
                 for team in chunk:
-                    obj.add(team)
+                    obj.contestants.add(team)
                     obj.save()
         else:
             group_size = get_division_value(qs.count())
@@ -82,6 +85,7 @@ def create_tournament_groups_or_ladder():
                     )
                     for team in team_pair:
                         obj.contestants.add(team)
+                        obj.save()
 
 
 @app.task()
