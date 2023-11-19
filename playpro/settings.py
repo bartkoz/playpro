@@ -104,10 +104,10 @@ APPEND_SLASH = True
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "d347ul7e58t46k",
-        "USER": "ebvxskmabebvib",
-        "PASSWORD": "e4d3737acd80e83a1825b2ee3533578907701574a3966ffaf64627dcbf225993",
-        "HOST": "ec2-63-35-156-160.eu-west-1.compute.amazonaws.com",
+        "NAME": "",
+        "USER": "",
+        "PASSWORD": "",
+        "HOST": "",
         "PORT": "5432",
         "CONN_MAX_AGE": 2000,
     }
@@ -177,8 +177,8 @@ ASGI_APPLICATION = "playpro.asgi.application"
 NOTIFICATION_CHARSET = "QWERTYUIOPASDFGHJKLZXCVBNM1234567890"
 BASE_URL = "https://playpro.gg"
 DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-AWS_ACCESS_KEY_ID = "AKIA5TTJDIW6GJGZCA4F"
-AWS_SECRET_ACCESS_KEY = "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"
+AWS_ACCESS_KEY_ID = ""
+AWS_SECRET_ACCESS_KEY = ""
 AWS_STORAGE_BUCKET_NAME = "playpro-media-files"
 AWS_DEFAULT_ACL = None
 AWS_S3_HOST = "s3.us-east-1.amazonaws.com"
